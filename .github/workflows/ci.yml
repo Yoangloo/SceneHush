@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Test and build (${{ matrix.arch }})
+    runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [arm64, x86_64]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test on the runner's native architecture
+        run: make test
+      - name: Build app
+        run: ./scripts/build.sh --arch '${{ matrix.arch }}'
+      - name: Verify app signature and minimum OS
+        run: |
+          codesign --verify --strict build/SceneHush.app
+          /usr/libexec/PlistBuddy -c 'Print :LSMinimumSystemVersion' build/SceneHush.app/Contents/Info.plist
+
