@@ -1,0 +1,12 @@
+.build/
+.swiftpm/
+build/
+dist/
+assets/SceneHush.iconset/
+.DS_Store
+*.xcuserstate
+*.xcuserdatad/
+.env
+.env.*
+!.env.example
+
