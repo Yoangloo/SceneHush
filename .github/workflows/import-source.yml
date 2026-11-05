@@ -1,0 +1,23 @@
+name: Import reviewed standalone source
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/import-source.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Expand reviewed source
+        run: |
+          unzip -o source-import.zip
+          chmod +x scripts/*.sh
+          git rm source-import.zip
+          git add .
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Add standalone native dimming and crash recovery'
+          git push
