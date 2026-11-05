@@ -2,7 +2,7 @@
 set -euo pipefail
 
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-APP_VERSION="1.0.1"
+APP_VERSION="1.1.0"
 ARCHITECTURE="universal"
 SKIP_BUILD=false
 
@@ -12,7 +12,7 @@ while [[ $# -gt 0 ]]; do
     --version) APP_VERSION="${2:?Missing version}"; shift 2 ;;
     --skip-build) SKIP_BUILD=true; shift ;;
     -h|--help)
-      printf 'Usage: scripts/package.sh [--arch universal|arm64|x86_64] [--version 1.0.0] [--skip-build]\n'
+      printf 'Usage: scripts/package.sh [--arch universal|arm64|x86_64] [--version 1.1.0] [--skip-build]\n'
       exit 0 ;;
     *) printf 'Unknown argument: %s\n' "$1" >&2; exit 2 ;;
   esac
@@ -60,7 +60,11 @@ SceneHush — a quieter screen, one corner away.
 
 1. Drag SceneHush.app to Applications.
 2. Open SceneHush and choose your corner from the menu bar.
-3. Install and run BetterDisplay to control display brightness.
+3. Native mode works on its own. BetterDisplay is optional compatibility mode.
+
+Native mode dims display output, without a desktop overlay or a hardware
+brightness change. HDR, virtual displays and some drivers may be unsupported.
+This does not lock your Mac, prevent sleep, or guarantee agent compatibility.
 
 English / 简体中文 / 日本語 can be selected in SceneHush settings.
 
@@ -72,15 +76,22 @@ Getting started: https://github.com/Yoangloo/SceneHush
 
 简体中文
 1. 将 SceneHush.app 拖入 Applications（应用程序）文件夹后打开。
-2. 安装并运行 BetterDisplay，在 SceneHush 菜单中选择触发角落。
+2. 在 SceneHush 菜单中选择触发角落。默认原生模式无需安装 BetterDisplay。
 3. 可在设置中切换界面语言。
+原生模式调暗显示输出，不添加桌面遮罩，也不改变硬件亮度；HDR、虚拟屏及部分
+驱动可能不支持。BetterDisplay 仅为可选兼容模式。此工具不会锁屏或阻止休眠，
+也不保证兼容每一种 Agent 工作流。
 此版本使用临时签名，尚未经过 Apple 公证。如被系统拦截，请核对下载来源，
 再前往「系统设置 > 隐私与安全性」点击「仍要打开」。
 
 日本語
 1. SceneHush.app を Applications（アプリケーション）にドラッグして開きます。
-2. BetterDisplay をインストールして起動し、SceneHush のメニューでコーナーを選びます。
+2. メニューでコーナーを選びます。既定のネイティブモードは BetterDisplay 不要です。
 3. 設定で表示言語を変更できます。
+ネイティブモードは画面出力を暗くし、デスクトップを覆ったり、ハードウェアの
+輝度を変えたりしません。HDR、仮想画面、一部のドライバーは非対応の場合が
+あります。BetterDisplay は任意の互換モードです。ロックやスリープ防止、
+すべてのエージェントとの互換性を保証するものではありません。
 このバージョンはアドホック署名で、Apple の公証を受けていません。起動が
 ブロックされた場合は配布元を確認し、「システム設定 > プライバシーと
 セキュリティ」で「このまま開く」を選択してください。

@@ -20,14 +20,14 @@ body:
     id: versions
     attributes:
       label: Versions
-      description: macOS, SceneHush, and BetterDisplay versions.
+      description: macOS and SceneHush versions. Include the BetterDisplay version only if using that optional mode.
     validations:
       required: true
   - type: textarea
     id: displays
     attributes:
       label: Display setup
-      description: Built-in/external display models and connection type. Please omit serial numbers.
+      description: Selected dimming method, built-in/external display models, connection type, and whether HDR or virtual displays are enabled. Please omit serial numbers.
   - type: textarea
     id: logs
     attributes:

@@ -9,11 +9,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate, SettingsActions {
     let paths = RuntimePaths()
     lazy var store = ConfigurationStore(paths: paths)
     lazy var nativeCorners = NativeHotCorners(paths: paths)
-    lazy var controller = BrightnessController(paths: paths, logger: { [weak self] in self?.log($0) })
+    lazy var controller = DisplayDimmingController(paths: paths, logger: { [weak self] in self?.log($0) })
+    lazy var recoveryMonitor = DisplayRecoveryMonitor(paths: paths)
     let worker = DispatchQueue(label: "io.github.yoangloo.SceneHush.brightness")
     var configuration = Configuration()
     var localizer: Localizer { Localizer(configuration.language) }
-    var backendAvailable: Bool { controller.isAvailable }
+    var backendAvailable: Bool { controller.isAvailable(configuration.dimmingMethod) }
     var loginEnabled: Bool { SMAppService.mainApp.status == .enabled }
     var lastIssue: String?
     var item: NSStatusItem!
@@ -80,6 +81,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate, SettingsActions {
         }
         add("SceneHush", nil)
         add(l("enabled"), #selector(toggleEnabled), selected: configuration.enabled)
+        let methods = NSMenu()
+        for (index, method) in DimmingMethod.allCases.enumerated() {
+            add(l("method." + method.rawValue), #selector(chooseMethod), to: methods, tag: index,
+                selected: method == configuration.dimmingMethod)
+        }
+        add(l("method.label"), nil).submenu = methods
         let cornerMenu = NSMenu()
         for (index, corner) in Corner.allCases.enumerated() {
             _ = add(l.corner(corner), #selector(chooseCorner), to: cornerMenu, tag: index, selected: corner == configuration.selectedCorner)
@@ -127,14 +134,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate, SettingsActions {
                     self.phase = .idle
                     if case .failure(let error) = result { self.lastIssue = self.localizer("error.restore"); self.log(error.localizedDescription) }
                     self.refresh()
-                    if self.quitting { NSApp.reply(toApplicationShouldTerminate: true) }
+                    if self.quitting { self.recoveryMonitor.finish(); NSApp.reply(toApplicationShouldTerminate: true) }
                     else { self.reconcile() }
                 }
             }
         } else if phase == .idle && wantDim && !quitting {
             phase = .dimming
+            let method = configuration.dimmingMethod
             worker.async {
-                let result = Result { try self.controller.dim() }
+                let result = Result {
+                    if method == .native { try self.recoveryMonitor.startIfNeeded() }
+                    try self.controller.dim(using: method)
+                }
                 DispatchQueue.main.async {
                     switch result {
                     case .success: self.phase = .dark; self.lastIssue = nil
@@ -146,7 +157,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, SettingsActions {
                     self.refresh(); self.reconcile()
                 }
             }
-        } else if quitting { NSApp.reply(toApplicationShouldTerminate: true) }
+        } else if quitting { recoveryMonitor.finish(); NSApp.reply(toApplicationShouldTerminate: true) }
     }
 
     func persist() {
@@ -165,6 +176,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate, SettingsActions {
         configuration.selectedCorner = corner; previousInside = nil; cornerConflict = false; persist()
     }
     func setLanguage(_ language: AppLanguage) { configuration.language = language; lastIssue = nil; persist() }
+    func setDimmingMethod(_ method: DimmingMethod) {
+        restoreNow()
+        configuration.dimmingMethod = method
+        previousInside = nil
+        lastIssue = nil
+        persist()
+    }
     func setRestoreOnExit(_ value: Bool) {
         configuration.restoreOnExit = value
         if value && previousInside != true { wantDim = false; reconcile() }
@@ -197,6 +215,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, SettingsActions {
     @objc func toggleEnabled() { setEnabled(!configuration.enabled) }
     @objc func chooseCorner(_ sender: NSMenuItem) { setCorner(Corner.allCases[sender.tag]) }
     @objc func chooseLanguage(_ sender: NSMenuItem) { setLanguage(AppLanguage.allCases[sender.tag]) }
+    @objc func chooseMethod(_ sender: NSMenuItem) { setDimmingMethod(DimmingMethod.allCases[sender.tag]) }
     @objc func chooseRestore(_ sender: NSMenuItem) { setRestoreOnExit(sender.tag == 0) }
     @objc func toggleLogin() { setLoginEnabled(!loginEnabled) }
     @objc func quit() { NSApp.terminate(nil) }

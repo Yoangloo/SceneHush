@@ -9,6 +9,7 @@ protocol SettingsActions: AnyObject {
     var lastIssue: String? { get }
     func setCorner(_ corner: Corner)
     func setLanguage(_ language: AppLanguage)
+    func setDimmingMethod(_ method: DimmingMethod)
     func setRestoreOnExit(_ value: Bool)
     func setEnabled(_ value: Bool)
     func setLoginEnabled(_ value: Bool)
@@ -28,7 +29,7 @@ final class SettingsWindowController: NSWindowController {
 
     init(actions: SettingsActions) {
         self.actions = actions
-        let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 600, height: 590),
+        let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 600, height: 700),
                               styleMask: [.titled, .closable, .miniaturizable], backing: .buffered, defer: false)
         window.title = "SceneHush"
         window.isReleasedWhenClosed = false
@@ -64,7 +65,7 @@ final class SettingsWindowController: NSWindowController {
         let stack = NSStackView()
         stack.orientation = .vertical
         stack.alignment = .leading
-        stack.spacing = 17
+        stack.spacing = 15
         stack.translatesAutoresizingMaskIntoConstraints = false
         content.addSubview(stack)
         NSLayoutConstraint.activate([
@@ -80,13 +81,26 @@ final class SettingsWindowController: NSWindowController {
         stack.addArrangedSubview(subtitle)
         subtitle.widthAnchor.constraint(equalTo: stack.widthAnchor).isActive = true
 
-        let status = label(actions.backendAvailable ? l("backend.ready") : l("backend.missing"),
+        let readyKey = actions.configuration.dimmingMethod == .native ? "backend.nativeReady" : "backend.ready"
+        let status = label(actions.backendAvailable ? l(readyKey) : l("backend.missing"),
                            color: actions.backendAvailable ? .systemGreen : .systemOrange)
         stack.addArrangedSubview(status)
         status.widthAnchor.constraint(equalTo: stack.widthAnchor).isActive = true
         let enable = NSButton(checkboxWithTitle: l("enabled"), target: self, action: #selector(enabledChanged))
         enable.state = actions.configuration.enabled ? .on : .off
         stack.addArrangedSubview(enable)
+
+        let methods = NSPopUpButton()
+        methods.addItems(withTitles: DimmingMethod.allCases.map { l("method." + $0.rawValue) })
+        methods.selectItem(at: DimmingMethod.allCases.firstIndex(of: actions.configuration.dimmingMethod) ?? 0)
+        methods.target = self
+        methods.action = #selector(methodChanged)
+        stack.addArrangedSubview(row(l("method.label"), methods))
+        if actions.configuration.dimmingMethod == .native {
+            let explanation = label(l("native.explanation"), size: 12, color: .secondaryLabelColor)
+            stack.addArrangedSubview(explanation)
+            explanation.widthAnchor.constraint(equalTo: stack.widthAnchor).isActive = true
+        }
 
         let corners = NSPopUpButton()
         corners.addItems(withTitles: Corner.allCases.map(l.corner))
@@ -113,10 +127,10 @@ final class SettingsWindowController: NSWindowController {
         login.state = actions.loginEnabled ? .on : .off
         stack.addArrangedSubview(login)
 
-        let buttons = NSStackView(views: [
-            NSButton(title: l("restore.now"), target: self, action: #selector(restoreNow)),
-            NSButton(title: l("backend.open"), target: self, action: #selector(openBetterDisplay))
-        ])
+        let buttons = NSStackView(views: [NSButton(title: l("restore.now"), target: self, action: #selector(restoreNow))])
+        if actions.configuration.dimmingMethod == .betterDisplay {
+            buttons.addArrangedSubview(NSButton(title: l("backend.open"), target: self, action: #selector(openBetterDisplay)))
+        }
         buttons.spacing = 10
         stack.addArrangedSubview(buttons)
 
@@ -145,6 +159,7 @@ final class SettingsWindowController: NSWindowController {
     @objc private func cornerChanged(_ sender: NSPopUpButton) { actions.setCorner(Corner.allCases[sender.indexOfSelectedItem]) }
     @objc private func restoreChanged(_ sender: NSPopUpButton) { actions.setRestoreOnExit(sender.indexOfSelectedItem == 0) }
     @objc private func languageChanged(_ sender: NSPopUpButton) { actions.setLanguage(AppLanguage.allCases[sender.indexOfSelectedItem]) }
+    @objc private func methodChanged(_ sender: NSPopUpButton) { actions.setDimmingMethod(DimmingMethod.allCases[sender.indexOfSelectedItem]) }
     @objc private func loginChanged(_ sender: NSButton) { actions.setLoginEnabled(sender.state == .on) }
     @objc private func restoreNow() { actions.restoreNow() }
     @objc private func restoreSystem() { actions.restoreSystemCorners() }

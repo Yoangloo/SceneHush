@@ -1,7 +1,7 @@
 {
   "subtitle": "A quiet corner for a short break.",
   "backend.ready": "Ready · BetterDisplay found",
-  "backend.missing": "Install and open BetterDisplay, then enable its command line integration.",
+  "backend.missing": "This optional mode needs BetterDisplay running with command line integration enabled. Native mode needs no extra app.",
   "enabled": "Enable SceneHush",
   "corner.label": "Trigger corner",
   "corner.leftTop": "Top left",
@@ -16,7 +16,7 @@
   "login": "Launch at login",
   "restore.now": "Restore brightness now",
   "backend.open": "Get BetterDisplay",
-  "purpose": "Taking a short break while your computer agent works? Move the pointer into your chosen corner to set all connected displays to 0%. SceneHush leaves your session running; it does not prevent sleep or guarantee that agent tasks continue.",
+  "purpose": "Taking a short break while your computer agent works? Use a corner to dim supported display output while keeping your session. SceneHush does not prevent sleep or guarantee continued agent tasks.",
   "risk": "Dimming is not locking. Anyone nearby may restore the screen and use your Mac. Lock your Mac when it is unattended or in a shared space.",
   "system.restore": "Restore macOS Hot Corners",
   "system.conflict": "This corner already has a macOS action",
@@ -28,7 +28,12 @@
   "about": "About SceneHush",
   "quit": "Restore brightness and quit",
   "error.config": "Could not read or save settings. Check local file permissions.",
-  "error.dim": "Could not dim displays. Open BetterDisplay and enable its command line integration, then try again.",
+  "error.dim": "Could not dim the displays; saved state was restored where possible. Some displays may not support this method. Check the setup or try the other method.",
   "error.restore": "Some displays could not be restored. Reconnect them and choose Restore brightness now.",
-  "error.generic": "The change could not be completed. Check the details below and try again."
+  "error.generic": "The change could not be completed. Check the details below and try again.",
+  "method.label": "Dimming method",
+  "method.native": "Native · no extra app",
+  "method.betterDisplay": "BetterDisplay · optional",
+  "backend.nativeReady": "Ready · native display control",
+  "native.explanation": "Dims display output without a desktop overlay. Hardware brightness is unchanged. HDR, virtual displays and some drivers may be unsupported."
 }

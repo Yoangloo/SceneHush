@@ -1,7 +1,7 @@
 {
   "subtitle": "短暂离开，让屏幕安静一会儿。",
   "backend.ready": "已就绪 · 已找到 BetterDisplay",
-  "backend.missing": "请安装并打开 BetterDisplay，并在其设置中启用命令行集成。",
+  "backend.missing": "此可选模式需要运行 BetterDisplay 并开启命令行集成；原生模式无需其他 App。",
   "enabled": "启用 SceneHush",
   "corner.label": "触发角落",
   "corner.leftTop": "左上角",
@@ -16,7 +16,7 @@
   "login": "登录时启动",
   "restore.now": "立即恢复原亮度",
   "backend.open": "获取 BetterDisplay",
-  "purpose": "电脑上的 Agent 还在工作，自己想短暂离开？把鼠标移到选定角落，即可将所有已连接屏幕的亮度调到 0%。SceneHush 不会主动结束当前会话，也不会阻止休眠或保证 Agent 任务持续运行。",
+  "purpose": "Agent 还在工作，自己想短暂离开？通过角落调暗受支持屏幕的显示输出，同时保留当前会话。SceneHush 不阻止休眠，也不保证 Agent 任务持续运行。",
   "risk": "调暗不等于锁屏。旁人仍可恢复屏幕并操作你的 Mac。在共享环境或无人看管时，请使用系统锁屏。",
   "system.restore": "恢复系统快捷角",
   "system.conflict": "这个角落已有系统快捷角动作",
@@ -28,7 +28,12 @@
   "about": "关于 SceneHush",
   "quit": "恢复亮度并退出",
   "error.config": "无法读取或保存设置，请检查本地文件权限。",
-  "error.dim": "无法调暗屏幕。请打开 BetterDisplay，启用命令行集成后再试。",
+  "error.dim": "无法调暗屏幕，已尽可能恢复原状态。部分屏幕可能不支持此方式，请检查设备或尝试另一种调暗方式。",
   "error.restore": "部分屏幕尚未恢复。请重新连接后选择“立即恢复原亮度”。",
-  "error.generic": "未能完成更改，请查看下方详情后重试。"
+  "error.generic": "未能完成更改，请查看下方详情后重试。",
+  "method.label": "调暗方式",
+  "method.native": "原生模式 · 无需其他 App",
+  "method.betterDisplay": "BetterDisplay · 可选",
+  "backend.nativeReady": "已就绪 · 原生显示控制",
+  "native.explanation": "直接调暗显示输出，不添加桌面遮罩，硬件亮度保持不变。HDR、虚拟显示屏和部分驱动可能不支持。"
 }

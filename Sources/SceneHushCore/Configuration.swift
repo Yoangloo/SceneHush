@@ -19,22 +19,29 @@ public enum AppLanguage: String, Codable, CaseIterable {
     case system, en, zhHans, ja
 }
 
+public enum DimmingMethod: String, Codable, CaseIterable {
+    case native, betterDisplay
+}
+
 public struct Configuration: Codable, Equatable {
     public var selectedCorner: Corner
     public var restoreOnExit: Bool
     public var enabled: Bool
     public var language: AppLanguage
+    public var dimmingMethod: DimmingMethod
 
     public init(selectedCorner: Corner = .rightBottom, restoreOnExit: Bool = true,
-                enabled: Bool = true, language: AppLanguage = .system) {
+                enabled: Bool = true, language: AppLanguage = .system,
+                dimmingMethod: DimmingMethod = .native) {
         self.selectedCorner = selectedCorner
         self.restoreOnExit = restoreOnExit
         self.enabled = enabled
         self.language = language
+        self.dimmingMethod = dimmingMethod
     }
 
     private enum CodingKeys: String, CodingKey {
-        case selectedCorner, restoreOnExit, enabled, language
+        case selectedCorner, restoreOnExit, enabled, language, dimmingMethod
     }
 
     public init(from decoder: Decoder) throws {
@@ -43,6 +50,7 @@ public struct Configuration: Codable, Equatable {
         restoreOnExit = try values.decodeIfPresent(Bool.self, forKey: .restoreOnExit) ?? true
         enabled = try values.decodeIfPresent(Bool.self, forKey: .enabled) ?? true
         language = try values.decodeIfPresent(AppLanguage.self, forKey: .language) ?? .system
+        dimmingMethod = try values.decodeIfPresent(DimmingMethod.self, forKey: .dimmingMethod) ?? .native
     }
 }
 
@@ -50,6 +58,7 @@ public struct RuntimePaths {
     public let supportDirectory: URL
     public var configURL: URL { supportDirectory.appendingPathComponent("config.json") }
     public var snapshotURL: URL { supportDirectory.appendingPathComponent("brightness-snapshot.json") }
+    public var nativeSnapshotURL: URL { supportDirectory.appendingPathComponent("native-display-snapshot.json") }
 
     public init(supportDirectory: URL = FileManager.default.homeDirectoryForCurrentUser
         .appendingPathComponent("Library/Application Support/SceneHush", isDirectory: true)) {

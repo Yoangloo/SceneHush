@@ -44,9 +44,10 @@ import Testing
         #expect(!old.restoreOnExit)
         #expect(old.enabled)
         #expect(old.language == .system)
+        #expect(old.dimmingMethod == .native)
 
         let configuration = Configuration(selectedCorner: .leftTop, restoreOnExit: false,
-                                          enabled: false, language: .ja)
+                                          enabled: false, language: .ja, dimmingMethod: .betterDisplay)
         let store = ConfigurationStore(paths: paths)
         #expect(try store.load() == Configuration())
         try store.save(configuration)

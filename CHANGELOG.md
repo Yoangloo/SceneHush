@@ -2,6 +2,21 @@
 
 Changes are grouped by release. Dates use the release's calendar date.
 
+## 1.1.0 — 2026-11-05
+
+### Added
+
+- Standalone native dimming through macOS CoreGraphics gamma controls, without BetterDisplay or a desktop overlay.
+- A dimming-method selector, with BetterDisplay available as an optional compatibility mode.
+- Native display-state snapshots and recovery, with rollback when dimming reports a failure.
+- English, Simplified Chinese, and Japanese guidance for native-mode compatibility and hardware-brightness limits.
+
+### Changed
+
+- Use native mode by default, including when an older configuration has no dimming-method setting.
+- Make BetterDisplay installation and command-line integration necessary only for its optional mode.
+- Clarify that native mode darkens display output without setting the hardware brightness slider to zero or guaranteeing backlight or power-off.
+
 ## 1.0.1 — 2026-11-05
 
 ### Changed
