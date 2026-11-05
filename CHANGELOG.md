@@ -2,6 +2,12 @@
 
 Changes are grouped by release. Dates use the release's calendar date.
 
+## 1.0.1 — 2026-11-05
+
+### Changed
+
+- Show only the SceneHush icon in the menu bar; the app name appears inside the opened menu.
+
 ## 1.0.0 — 2026-11-05
 
 ### Added

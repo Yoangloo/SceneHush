@@ -43,15 +43,15 @@ SceneHush uses BetterDisplay's existing display controls. Which external display
 
 1. Download the DMG or ZIP from [Releases](https://github.com/Yoangloo/SceneHush/releases/latest).
 2. Open the DMG and drag **SceneHush.app** into **Applications**. For a ZIP, extract it and move the app into Applications.
-3. Open SceneHush. Its name and icon appear in the menu bar; it does not need a Dock icon.
+3. Open SceneHush. Only its icon appears in the menu bar; click the icon to see the app name in the menu. There is no Dock icon.
 4. Make sure BetterDisplay is running and command-line integration is enabled.
-5. Open SceneHush's menu, choose a corner, and move the pointer into that corner to try it.
+5. Click its menu bar icon, choose a corner, and move the pointer into that corner to try it.
 
 The initial release is **ad-hoc signed, without Developer ID signing or Apple notarization**. If macOS blocks it, only after confirming that you trust this repository and its release, use **System Settings → Privacy & Security → Open Anyway**. Building from source is another option. Release checksums identify the downloaded files; they do not replace Apple notarization.
 
 ## Use
 
-Click **SceneHush** in the menu bar to choose a trigger corner, change the restore behavior, select a language, pause the app, or restore brightness immediately. The default corner is **bottom right**, and the default restore behavior is **restore when the pointer leaves**.
+Click the **SceneHush icon** in the menu bar. The opened menu shows the app name and lets you choose a trigger corner, change the restore behavior, select a language, pause the app, or restore brightness immediately. The default corner is **bottom right**, and the default restore behavior is **restore when the pointer leaves**.
 
 If macOS already assigns an action to the selected corner, SceneHush offers to replace that action. The change is optional. Its previous value is backed up locally and can be restored explicitly from SceneHush's settings. You can also change Hot Corners yourself in macOS settings.
 
