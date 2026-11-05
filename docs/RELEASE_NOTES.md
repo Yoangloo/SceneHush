@@ -1,6 +1,8 @@
-# SceneHush 1.0.0
+# SceneHush 1.0.1
 
 ## English
+
+**New in 1.0.1:** the menu bar now shows only an icon; click it to see the SceneHush name in the opened menu.
 
 Move the pointer into a corner and let every supported display go quiet. SceneHush lives in the macOS menu bar and uses BetterDisplay to lower the brightness of your MacBook and external displays to 0%. By default, move away to restore each screen's previous brightness.
 
@@ -21,6 +23,8 @@ SceneHush adjusts brightness; it does not lock macOS or add authentication. Anyo
 
 ## 简体中文
 
+**1.0.1 更新：**菜单栏现在仅显示图标；点击展开菜单后，才显示 SceneHush 名称。
+
 把鼠标移到角落，让所有受支持的屏幕一起安静下来。SceneHush 常驻 macOS 顶部菜单栏，通过 BetterDisplay 将 MacBook 内置屏和外接屏亮度降到 0%。默认移开鼠标后，各屏恢复各自原来的亮度。
 
 它起于 MacBook 加外接屏的右下角调暗需求，面向电脑上的 agent 正在工作、人想短暂离开的场景：让屏幕暗下来，同时保留当前桌面会话。一些桌面交互流程可能因锁屏或睡眠而中断，另一些 agent 不受影响。SceneHush 不会防止睡眠，也不保证 agent 持续运行。
@@ -39,6 +43,8 @@ SceneHush adjusts brightness; it does not lock macOS or add authentication. Anyo
 SceneHush 调整亮度，不会锁定 macOS，也没有身份验证。旁人可以恢复亮度并操作这台未锁定的 Mac。公共、共享环境或需要安全地无人看管电脑时，应使用系统锁屏。0% 不保证屏幕背光关闭或断电，也不构成隐私边界。
 
 ## 日本語
+
+**1.0.1 の変更点：**メニューバーはアイコンのみになりました。クリックしてメニューを開くと、SceneHush の名前が表示されます。
 
 ポインタを隅へ移動して、対応する画面すべてを静かに。SceneHush は macOS のメニューバーで動作し、BetterDisplay を通じて MacBook の内蔵画面と外部ディスプレイの明るさを 0% にします。初期設定では、ポインタを離すと各画面が元の明るさに戻ります。
 

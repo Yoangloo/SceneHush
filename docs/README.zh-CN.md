@@ -43,15 +43,15 @@ SceneHush 使用 BetterDisplay 已有的显示器控制能力。外接屏能否�
 
 1. 从 [Releases](https://github.com/Yoangloo/SceneHush/releases/latest) 下载 DMG 或 ZIP。
 2. 打开 DMG，将 **SceneHush.app** 拖到**应用程序**；如果下载 ZIP，解压后将 App 移到应用程序文件夹。
-3. 打开 SceneHush。名称和图标会出现在顶部菜单栏，无需 Dock 图标。
+3. 打开 SceneHush。顶部菜单栏仅显示图标；点击图标展开菜单后，可看到名称 SceneHush。Dock 中不显示图标。
 4. 确认 BetterDisplay 正在运行，且已开启命令行集成。
-5. 打开 SceneHush 菜单，选择触发角落，再将鼠标移到该角落试用。
+5. 点击菜单栏图标，选择触发角落，再将鼠标移到该角落试用。
 
 首个版本使用 **ad-hoc 签名，尚无 Developer ID 签名及 Apple 公证**。如果 macOS 阻止打开，请先确认你信任本仓库和下载的 Release，再到**系统设置 → 隐私与安全性 → 仍要打开**。也可以从源码自行构建。下载校验和用于确认文件一致性，不能替代 Apple 公证。
 
 ## 使用
 
-点击菜单栏的 **SceneHush**，即可选择触发角落、调整恢复方式、切换语言、暂停触发或立即恢复亮度。默认使用**右下角**，恢复方式为**移开鼠标后恢复**。
+点击菜单栏中的 **SceneHush 图标**，展开后可看到 App 名称，并可选择触发角落、调整恢复方式、切换语言、暂停触发或立即恢复亮度。默认使用**右下角**，恢复方式为**移开鼠标后恢复**。
 
 如果所选角落已有 macOS 快捷角动作，SceneHush 会提供替换选项，由你选择是否替换。原设置会保存在本机，并可通过 SceneHush 设置中的还原操作恢复；也可以自行在 macOS 设置中调整快捷角。
 
