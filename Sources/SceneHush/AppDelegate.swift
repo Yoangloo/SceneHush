@@ -30,9 +30,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, SettingsActions {
         let firstLaunch = !FileManager.default.fileExists(atPath: paths.configURL.path)
         do { try paths.ensureDirectory(); configuration = try store.load() }
         catch { lastIssue = localizer("error.config"); log(error.localizedDescription); configuration.enabled = false }
-        item = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
-        item.button?.title = " SceneHush"
-        item.button?.imagePosition = .imageLeading
+        item = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
+        item.button?.title = ""
+        item.button?.imagePosition = .imageOnly
         cornerConflict = nativeCorners.hasConflict(configuration.selectedCorner)
         refresh()
         DistributedNotificationCenter.default().addObserver(self, selector: #selector(restoreNow),
@@ -70,7 +70,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, SettingsActions {
     func refresh() {
         let l = localizer
         item?.button?.image = NSImage(systemSymbolName: phase == .dark ? "moon.fill" : "sun.min", accessibilityDescription: "SceneHush")
-        item?.button?.toolTip = l("subtitle")
+        item?.button?.toolTip = "SceneHush — " + l("subtitle")
         let menu = NSMenu()
         @discardableResult func add(_ title: String, _ action: Selector?, to parent: NSMenu? = nil, tag: Int = 0, selected: Bool = false) -> NSMenuItem {
             let entry = NSMenuItem(title: title, action: action, keyEquivalent: "")
@@ -202,7 +202,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, SettingsActions {
     @objc func quit() { NSApp.terminate(nil) }
     @objc func about() {
         let alert = NSAlert()
-        alert.messageText = "SceneHush 1.0.0"
+        let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "Development"
+        alert.messageText = "SceneHush " + version
         alert.informativeText = localizer("purpose") + "\n\n" + localizer("risk") + "\n\nMIT · © 2026 Yoangloo"
         alert.runModal()
     }
