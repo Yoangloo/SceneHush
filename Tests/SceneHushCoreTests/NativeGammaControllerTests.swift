@@ -129,6 +129,126 @@ import Testing
         #expect(driver.display("A").table == curve(0.6))
     }
 
+    @Test func gradualRestorationUsesPersistedOriginalsAndRetainsSnapshotUntilFinalRestore() throws {
+        let original = GammaTable(red: [0.1, 0.4, 0.8], green: [0.2, 0.6, 1], blue: [0, 0.3, 0.6])
+        let second = GammaTable(red: [0, 0.2, 0.6], green: [0, 0.4, 0.8], blue: [0.2, 0.6, 1])
+        let driver = FakeGammaDriver(displays: [
+            FakeGammaDisplay(uuid: "A", displayID: 1, table: original),
+            FakeGammaDisplay(uuid: "B", displayID: 2, table: second)
+        ])
+        let subject = controller(driver)
+        let before = try subject.capture()
+        try subject.dim()
+        let saved = try Data(contentsOf: paths.nativeSnapshotURL)
+        try subject.setRestoreProgress(0)
+        try subject.verifyDark()
+        try subject.setRestoreProgress(0.5)
+        #expect(driver.display("A").table == GammaTable(red: [0.05, 0.2, 0.4],
+                                                        green: [0.1, 0.3, 0.5], blue: [0, 0.15, 0.3]))
+        #expect(driver.display("B").table == GammaTable(red: [0, 0.1, 0.3],
+                                                        green: [0, 0.2, 0.4], blue: [0.1, 0.3, 0.5]))
+        try subject.setRestoreProgress(0.5)
+        #expect(driver.display("A").table.red == [0.05, 0.2, 0.4])
+        #expect(try Data(contentsOf: paths.nativeSnapshotURL) == saved)
+
+        let restarted = controller(driver)
+        try restarted.setRestoreProgress(1)
+        try restarted.verifyRestored(before)
+        #expect(restarted.hasPendingSnapshot)
+        #expect(try Data(contentsOf: paths.nativeSnapshotURL) == saved)
+        try restarted.restore()
+        try restarted.verifyRestored(before)
+        #expect(!restarted.hasPendingSnapshot)
+    }
+
+    @Test func gradualRestorationRejectsInvalidProgressWithoutTouchingDisplaysOrSnapshot() throws {
+        let driver = FakeGammaDriver(displays: [FakeGammaDisplay(uuid: "A", displayID: 1, table: curve(0.8))])
+        let subject = controller(driver)
+        try subject.dim()
+        let saved = try Data(contentsOf: paths.nativeSnapshotURL)
+        driver.writes.removeAll()
+        for value: Double in [-0.001, 1.001, .nan, .infinity, -.infinity] {
+            #expect(throws: NativeGammaError.invalidProgress) { try subject.setRestoreProgress(value) }
+        }
+        #expect(driver.writes.isEmpty)
+        #expect(driver.display("A").table.isBlack)
+        #expect(try Data(contentsOf: paths.nativeSnapshotURL) == saved)
+    }
+
+    @Test func gradualRestorationRequiresSavedOriginals() throws {
+        let driver = FakeGammaDriver(displays: [FakeGammaDisplay(uuid: "A", displayID: 1, table: curve(0.8))])
+        let subject = controller(driver)
+        #expect(throws: NativeGammaError.missingSnapshot) { try subject.setRestoreProgress(0.5) }
+        #expect(driver.writes.isEmpty)
+        #expect(driver.display("A").table == curve(0.8))
+        #expect(!subject.hasPendingSnapshot)
+    }
+
+    @Test func partialProgressWriteFailureRollsBackAllDisplaysToOriginals() throws {
+        let driver = FakeGammaDriver(displays: [
+            FakeGammaDisplay(uuid: "A", displayID: 1, table: curve(0.4)),
+            FakeGammaDisplay(uuid: "B", displayID: 2, table: curve(0.8))
+        ])
+        let subject = controller(driver)
+        try subject.dim()
+        driver.failNextWriteUUID = "B"
+        #expect(throws: NativeGammaError.operationFailed(operation: "fake write", status: -1)) {
+            try subject.setRestoreProgress(0.5)
+        }
+        #expect(driver.display("A").table == curve(0.4))
+        #expect(driver.display("B").table == curve(0.8))
+        #expect(!subject.hasPendingSnapshot)
+    }
+
+    @Test func progressReadbackMismatchIsRejectedAndRolledBack() throws {
+        let driver = FakeGammaDriver(displays: [
+            FakeGammaDisplay(uuid: "A", displayID: 1, table: curve(0.4)),
+            FakeGammaDisplay(uuid: "B", displayID: 2, table: curve(0.8))
+        ])
+        let subject = controller(driver)
+        try subject.dim()
+        driver.ignoreNextWriteUUID = "B"
+        #expect(throws: NativeGammaError.verificationFailed) { try subject.setRestoreProgress(0.5) }
+        #expect(driver.display("A").table == curve(0.4))
+        #expect(driver.display("B").table == curve(0.8))
+        #expect(!subject.hasPendingSnapshot)
+    }
+
+    @Test func failedProgressReadbackRetainsFailedOriginalForRetry() throws {
+        let driver = FakeGammaDriver(displays: [
+            FakeGammaDisplay(uuid: "A", displayID: 1, table: curve(0.4)),
+            FakeGammaDisplay(uuid: "B", displayID: 2, table: curve(0.8))
+        ])
+        let subject = controller(driver)
+        try subject.dim()
+        driver.readFailureUUID = "B"
+        #expect(throws: NativeGammaError.unsupportedDisplay) { try subject.setRestoreProgress(0.5) }
+        #expect(driver.display("A").table == curve(0.4))
+        #expect(try snapshot() == [GammaDisplayState(uuid: "B", name: "B", table: curve(0.8))])
+        driver.readFailureUUID = nil
+        try subject.restore()
+        #expect(driver.display("B").table == curve(0.8))
+        #expect(!subject.hasPendingSnapshot)
+    }
+
+    @Test func disconnectionDuringGradualRestorationPreservesOriginalForReconnection() throws {
+        let driver = FakeGammaDriver(displays: [
+            FakeGammaDisplay(uuid: "A", displayID: 1, table: curve(0.4)),
+            FakeGammaDisplay(uuid: "B", displayID: 2, table: curve(0.8))
+        ])
+        let subject = controller(driver)
+        try subject.dim()
+        try subject.setRestoreProgress(0.5)
+        driver.update("B") { $0.connected = false }
+        #expect(throws: NativeGammaError.displayUnavailable) { try subject.setRestoreProgress(0.75) }
+        #expect(driver.display("A").table == curve(0.4))
+        #expect(try snapshot() == [GammaDisplayState(uuid: "B", name: "B", table: curve(0.8))])
+        driver.update("B") { $0.connected = true; $0.displayID = 99 }
+        try subject.restore()
+        #expect(driver.writes.contains { $0.uuid == "B" && $0.displayID == 99 && $0.table == curve(0.8) })
+        #expect(!subject.hasPendingSnapshot)
+    }
+
     @Test func failedRestoreKeepsOnlyFailedStateAndAllowsExplicitRetry() throws {
         let driver = FakeGammaDriver(displays: [
             FakeGammaDisplay(uuid: "A", displayID: 1, table: curve(0.4)),
@@ -164,6 +284,7 @@ import Testing
             try paths.writePrivate(input, to: paths.nativeSnapshotURL)
             #expect(throws: NativeGammaError.invalidSnapshot) { try subject.restore() }
             #expect(throws: NativeGammaError.invalidSnapshot) { try subject.dim() }
+            #expect(throws: NativeGammaError.invalidSnapshot) { try subject.setRestoreProgress(0.5) }
             #expect(try Data(contentsOf: paths.nativeSnapshotURL) == input)
             #expect(driver.writes.isEmpty)
             #expect(driver.display("A").table == curve(0.4))
@@ -259,6 +380,8 @@ private final class FakeGammaDriver: GammaDisplayDriving {
     var failNextBlackUUID: String?
     var ignoreBlackUUID: String?
     var failRestoreUUID: String?
+    var failNextWriteUUID: String?
+    var ignoreNextWriteUUID: String?
     var resampleRestore = false
     var beforeWrite: ((GammaTable, String) throws -> Void)?
 
@@ -287,6 +410,11 @@ private final class FakeGammaDriver: GammaDisplayDriving {
         }
         try beforeWrite?(table, uuid)
         writes.append(Write(uuid: uuid, displayID: displays[index].displayID, table: table))
+        if failNextWriteUUID == uuid {
+            failNextWriteUUID = nil
+            throw NativeGammaError.operationFailed(operation: "fake write", status: -1)
+        }
+        if ignoreNextWriteUUID == uuid { ignoreNextWriteUUID = nil; return }
         if table.isBlack && failNextBlackUUID == uuid {
             failNextBlackUUID = nil
             throw NativeGammaError.operationFailed(operation: "fake write", status: -1)

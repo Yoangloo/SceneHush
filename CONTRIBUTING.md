@@ -1,10 +1,10 @@
 # Contributing to SceneHush
 
-Thank you for helping improve SceneHush. Keep changes focused and describe the user-visible behavior they change.
+Keep changes focused and describe the user-visible behavior they change.
 
 ## Development setup
 
-Use a Mac with Xcode Command Line Tools installed. Native mode runs without BetterDisplay. Testing the optional BetterDisplay mode requires that separate app and its command-line integration. Automated tests should use test doubles and must not change the developer's display state.
+Use macOS 14 or later, Swift 6, and a macOS 26 SDK from Xcode 26 or corresponding Command Line Tools. Liquid Glass APIs require the new SDK; availability checks retain macOS 13 runtime support. Automated tests must use test doubles and must not change the developer's display state.
 
 ```sh
 git clone https://github.com/Yoangloo/SceneHush.git
@@ -13,41 +13,42 @@ make test
 make build
 ```
 
-For a distributable app and archives:
-
-```sh
-make package
-```
-
-The app is generated at `build/SceneHush.app`; packages and checksums are generated in `dist/`. Packaging builds both arm64 and x86_64 slices by default, so a machine does not need to match the release architecture. For a faster native build, use `make build ARCH=arm64` or `make build ARCH=x86_64`. Running the app still requires macOS and a supported architecture.
+Use `make package` for DMG/ZIP archives and checksums. The app is generated at `build/SceneHush.app`, and packages at `dist/`. Packaging builds arm64 and x86_64 by default. Use `make build ARCH=arm64` or `make build ARCH=x86_64` for a faster single-architecture build; runtime testing still requires suitable hardware.
 
 ## Before opening a pull request
 
-1. Make a branch for one change, reproduce the issue, and add a meaningful test for a behavior change.
-2. Run `make test` before building the app. Run `make build` after changes that affect compilation or resources.
-3. Keep configuration and recovery formats compatible, or add an explicit migration. Never discard a saved display state just because its display is temporarily disconnected. Native gamma snapshots and legacy BetterDisplay brightness snapshots must remain distinguishable.
-4. Update English, Simplified Chinese, and Japanese together when changing user-facing text. All language choices must work without restarting the app.
-5. Explain the problem, resulting behavior, and validation in the pull request. Include a screenshot when changing visible UI.
+1. Make one focused change, reproduce the issue, and add a meaningful test for a behavior change.
+2. Run `make test` first, then `make build` for changes affecting compilation or resources.
+3. Keep configuration and recovery compatible or implement explicit migration. Preserve unresolved display state, including snapshots for disconnected displays. Old external-app brightness files must not be mistaken for gamma data or silently removed.
+4. Update English, Simplified Chinese, and Japanese together. Language changes must work without restarting.
+5. Describe the problem, resulting behavior, and validation. Include actual screenshots for visible UI changes.
 
-Do not add telemetry, background network calls, third-party binary downloads, credentials, or machine-specific paths. BetterDisplay is an optional external dependency; do not bundle or redistribute it in SceneHush releases.
+Do not add telemetry, background network calls, third-party binary downloads, credentials, or machine-specific paths. SceneHush uses native display control only.
 
 ## Manual checks for display changes
 
-Test with display recovery available and a known starting state on each display. Confirm that entering the selected corner dims every connected supported screen, and that the selected restore behavior brings each screen back to its own starting state. For native mode, verify gamma-table values and restoration; the hardware brightness slider is not its control. For BetterDisplay mode, check the saved brightness and automatic-brightness state. Check at least one internal and one external display when hardware is available; report the setups you could not test, including HDR and virtual displays.
+Begin with known RGB tables on every screen and a working restoration path. Confirm every supported connected display darkens and each one restores its original table. Verify gamma values rather than the hardware brightness slider. Test an internal and external screen when available, and name untested setups such as HDR and virtual displays.
 
-Native mode must not create a desktop overlay. That does not establish compatibility with every screen-capture or agent workflow: test the actual capture path before making a claim about it. Driver success and a readable gamma table alone do not prove that every display physically went black. If a driver rejects dimming, attempt rollback and report the failure instead of silently adding an overlay.
+Do not create a black desktop overlay as a fallback. Driver success and gamma readback alone do not establish physical display behavior or compatibility with all agents. Test the actual screen-capture path before making claims. If a display rejects a change, restore saved state and report the error.
 
-For changes to corner selection, verify all four choices and screen layouts with negative coordinates. For recovery changes, check failure partway through dimming, app interruption, and disconnecting and reconnecting a display. Changes to macOS Hot Corners must remain optional, preserve backups, and have a working restore action.
+For corners, test all four choices and layouts with negative coordinates. For recovery, test partial failure, interruption, disconnection and reconnection. Native Hot Corner changes remain optional, with a saved original value and a working restore action.
+
+## Introduction and visual checks
+
+Walk through a fresh launch, permission explanation, an explicitly started five-second demonstration, restoration, and entry into settings. Confirm the introduction can be skipped and replayed, corner triggers stay paused while it is open, and Escape or closing during the demonstration restores displays. Check failure and crash recovery during the fade, not just after it.
+
+Check English, Simplified Chinese, and Japanese for clipping, keyboard access, focus, and aligned controls. Inspect Liquid Glass on macOS 26+ and the fallback on older systems when available. Respect Reduce Motion for decorative movement; the intentional display demonstration must remain optional with an immediate restoration action. Do not describe a screenshot as proof of smooth animation.
 
 ## Release checks
 
-- Run the automated tests and build/package commands from a clean checkout.
-- Verify that the app contains both architectures, the expected version, and all three translations.
-- Open the packaged app without BetterDisplay and check native mode. Check optional-mode guidance separately, and try the menu, settings, login item, dimming, and restoration.
-- Confirm that packages contain only intended app/source content, and record their SHA-256 checksums.
-- State the actual signing and notarization status in the release. Do not describe an ad-hoc signature as Developer ID signing or notarization.
-- Publish the tag, release notes, DMG, ZIP, and checksums together. Verify the public download links after publishing.
+- Test and build from a clean checkout, then package the universal app.
+- Verify version, both architectures, minimum macOS version, and all translations.
+- Walk through menu, settings, first run, replay, optional login item, dimming, and restoration.
+- Check package contents and SHA-256 checksums.
+- State the actual signing and notarization status; ad-hoc is not Developer ID or notarization.
+- Publish tag, three-language release notes, DMG, ZIP, and checksums together, then verify public downloads.
+- Record observed results and remaining gaps in [VALIDATION.md](docs/VALIDATION.md).
 
 ## License
 
-Contributions are accepted under this repository's MIT License. Only contribute material you have the right to share.
+Contributions use this repository's MIT License. Only contribute material you have the right to share.

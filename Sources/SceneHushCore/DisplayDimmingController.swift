@@ -1,37 +1,32 @@
 import Foundation
 
-/// Both backends run on the app's serial display queue, including recovery.
+/// Run dimming, progress updates and recovery on the app's serial display queue.
 public final class DisplayDimmingController {
     public let native: NativeGammaController
-    public let betterDisplay: BrightnessController
+    private let paths: RuntimePaths
 
     public init(paths: RuntimePaths = RuntimePaths(), logger: @escaping (String) -> Void = { _ in }) {
+        self.paths = paths
         native = NativeGammaController(paths: paths, logger: logger)
-        betterDisplay = BrightnessController(paths: paths, logger: logger)
     }
 
-    public var hasPendingSnapshot: Bool { native.hasPendingSnapshot || betterDisplay.hasPendingSnapshot }
+    public var hasPendingSnapshot: Bool { native.hasPendingSnapshot }
 
-    public func isAvailable(_ method: DimmingMethod) -> Bool {
-        method == .native || betterDisplay.isAvailable
+    /// Historical recovery data is retained, without executing the removed display integration.
+    public var hasLegacySnapshot: Bool {
+        FileManager.default.fileExists(atPath: paths.legacySnapshotURL.path)
     }
 
-    public func dim(using method: DimmingMethod) throws {
-        switch method {
-        case .native:
-            try betterDisplay.restore()
-            try native.dim()
-        case .betterDisplay:
-            try native.restore()
-            try betterDisplay.dim()
-        }
+    public func dim() throws {
+        guard !hasLegacySnapshot else { throw NativeGammaError.legacyRestorationRequired }
+        try native.dim()
+    }
+
+    public func setRestoreProgress(_ progress: Double) throws {
+        try native.setRestoreProgress(progress)
     }
 
     public func restore() throws {
-        var failures: [Error] = []
-        do { try native.restore() } catch { failures.append(error) }
-        // Preserve and recover snapshots made before the standalone engine existed.
-        do { try betterDisplay.restore() } catch { failures.append(error) }
-        if let error = failures.first { throw error }
+        try native.restore()
     }
 }

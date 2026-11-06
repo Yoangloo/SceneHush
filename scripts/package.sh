@@ -2,7 +2,7 @@
 set -euo pipefail
 
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-APP_VERSION="1.1.0"
+APP_VERSION="1.2.0"
 ARCHITECTURE="universal"
 SKIP_BUILD=false
 
@@ -12,7 +12,7 @@ while [[ $# -gt 0 ]]; do
     --version) APP_VERSION="${2:?Missing version}"; shift 2 ;;
     --skip-build) SKIP_BUILD=true; shift ;;
     -h|--help)
-      printf 'Usage: scripts/package.sh [--arch universal|arm64|x86_64] [--version 1.1.0] [--skip-build]\n'
+      printf 'Usage: scripts/package.sh [--arch universal|arm64|x86_64] [--version 1.2.0] [--skip-build]\n'
       exit 0 ;;
     *) printf 'Unknown argument: %s\n' "$1" >&2; exit 2 ;;
   esac
@@ -56,15 +56,19 @@ ditto "$APP_PATH" "$STAGING/SceneHush.app"
 ln -s /Applications "$STAGING/Applications"
 cp "$PROJECT_ROOT/LICENSE" "$STAGING/LICENSE.txt"
 cat > "$STAGING/Install.txt" <<'INSTALL'
-SceneHush — a quieter screen, one corner away.
+SceneHush — screens at rest. Work in motion.
 
 1. Drag SceneHush.app to Applications.
-2. Open SceneHush and choose your corner from the menu bar.
-3. Native mode works on its own. BetterDisplay is optional compatibility mode.
+2. Open SceneHush and follow the introduction; no companion app is required.
+3. Try or skip the five-second dark-to-light demonstration, then choose a corner.
+   Escape restores immediately. Corner triggers are paused during the introduction.
 
-Native mode dims display output, without a desktop overlay or a hardware
-brightness change. HDR, virtual displays and some drivers may be unsupported.
-This does not lock your Mac, prevent sleep, or guarantee agent compatibility.
+No Accessibility, Screen Recording, or administrator permission is needed for
+display control. Optional launch at login may need macOS Login Items approval.
+SceneHush changes RGB display output without a desktop overlay or a hardware
+brightness change. It does not pause agents, lock your Mac, prevent sleep,
+or guarantee agent compatibility. HDR, virtual displays and some drivers
+may be unsupported. Restore displays and quit an old release before upgrading.
 
 English / 简体中文 / 日本語 can be selected in SceneHush settings.
 
@@ -76,22 +80,25 @@ Getting started: https://github.com/Yoangloo/SceneHush
 
 简体中文
 1. 将 SceneHush.app 拖入 Applications（应用程序）文件夹后打开。
-2. 在 SceneHush 菜单中选择触发角落。默认原生模式无需安装 BetterDisplay。
-3. 可在设置中切换界面语言。
-原生模式调暗显示输出，不添加桌面遮罩，也不改变硬件亮度；HDR、虚拟屏及部分
-驱动可能不支持。BetterDisplay 仅为可选兼容模式。此工具不会锁屏或阻止休眠，
-也不保证兼容每一种 Agent 工作流。
+2. 按引导了解权限，可体验或跳过 5 秒暗屏渐亮演示，再选择触发角落。
+3. 演示中按 Escape 立即恢复，引导期间暂停角落触发；设置中可切换语言。
+显示控制无需辅助功能、屏幕录制或管理员授权，也无需配套 App。可选的登录
+启动可能需要在 macOS 登录项中批准。此工具调暗 RGB 显示输出，不添加桌面
+遮罩、不改变硬件亮度、不暂停 agent；不会锁屏或阻止休眠，也不保证每一种
+agent 流程兼容。HDR、虚拟屏及部分驱动可能不支持。升级前先恢复显示并退出旧版。
 此版本使用临时签名，尚未经过 Apple 公证。如被系统拦截，请核对下载来源，
 再前往「系统设置 > 隐私与安全性」点击「仍要打开」。
 
 日本語
 1. SceneHush.app を Applications（アプリケーション）にドラッグして開きます。
-2. メニューでコーナーを選びます。既定のネイティブモードは BetterDisplay 不要です。
-3. 設定で表示言語を変更できます。
-ネイティブモードは画面出力を暗くし、デスクトップを覆ったり、ハードウェアの
-輝度を変えたりしません。HDR、仮想画面、一部のドライバーは非対応の場合が
-あります。BetterDisplay は任意の互換モードです。ロックやスリープ防止、
-すべてのエージェントとの互換性を保証するものではありません。
+2. ガイドで権限を確認し、5 秒間の暗転・復元デモを試すかスキップします。
+3. Escape で即座に復元できます。ガイド中はコーナー操作を一時停止します。
+追加アプリや、表示制御のためのアクセシビリティ・画面収録・管理者の権限は
+不要です。任意のログイン時の起動は、macOS 側で承認が必要な場合があります。
+RGB 出力を暗くし、デスクトップを覆ったり、ハードウェアの輝度を変えたり、
+エージェントを一時停止したりしません。HDR、仮想画面、一部のドライバーは
+非対応の場合があります。ロックやスリープ防止、エージェントとの互換性は
+保証しません。更新前に画面を復元し、旧版を終了してください。
 このバージョンはアドホック署名で、Apple の公証を受けていません。起動が
 ブロックされた場合は配布元を確認し、「システム設定 > プライバシーと
 セキュリティ」で「このまま開く」を選択してください。

@@ -13,11 +13,11 @@ func liveTest() throws {
     defer { recovery.finish() }
     let controller = NativeGammaController(paths: paths)
     guard !DisplayDimmingController(paths: paths).hasPendingSnapshot else {
-        throw BrightnessError.commandFailed(operation: "Restore existing snapshot before testing")
+        throw NativeGammaError.invalidSnapshot
     }
     try recovery.startIfNeeded()
     let before = try controller.capture()
-    try controller.dim()
+    try DisplayDimmingController(paths: paths).dim()
     defer { try? controller.restore() }
     try controller.verifyDark()
     print("PASS: Native output is zero on \(before.count) connected display(s).")
@@ -28,38 +28,59 @@ func liveTest() throws {
     print("PASS: Original RGB tables restored on all \(before.count) display(s).")
 }
 
-final class PreviewActions: SettingsActions {
+final class PreviewActions: OnboardingActions {
     var configuration = Configuration()
     var localizer: Localizer { Localizer(configuration.language) }
-    let backendAvailable = true
     let loginEnabled = true
     let lastIssue: String? = nil
     func setCorner(_ corner: Corner) { configuration.selectedCorner = corner }
     func setLanguage(_ language: AppLanguage) { configuration.language = language }
-    func setDimmingMethod(_ method: DimmingMethod) { configuration.dimmingMethod = method }
     func setRestoreOnExit(_ value: Bool) { configuration.restoreOnExit = value }
     func setEnabled(_ value: Bool) { configuration.enabled = value }
     func setLoginEnabled(_ value: Bool) {}
     func restoreNow() {}
     func restoreSystemCorners() {}
+    func showOnboarding() {}
+    func startDemonstration(progress: @escaping (Double) -> Void, completion: @escaping (Result<Void, Error>) -> Void) {}
+    func cancelDemonstration(completion: @escaping (Result<Void, Error>) -> Void) { completion(.success(())) }
+    func finishOnboarding() {}
+    func onboardingClosed() {}
 }
 
 func renderPreviews(at directory: String) throws {
     let actions = PreviewActions()
     let output = URL(fileURLWithPath: directory, isDirectory: true)
     try FileManager.default.createDirectory(at: output, withIntermediateDirectories: true)
-    for language: AppLanguage in [.en, .zhHans, .ja] {
-        actions.setLanguage(language)
-        let controller = SettingsWindowController(actions: actions)
-        guard let view = controller.window?.contentView else { continue }
+    func save(_ controller: NSWindowController, name: String, width: CGFloat? = nil) throws {
+        guard let window = controller.window, let view = window.contentView else { return }
+        if let width { window.setContentSize(NSSize(width: width, height: 800)) }
         view.layoutSubtreeIfNeeded()
-        guard let bitmap = view.bitmapImageRepForCachingDisplay(in: view.bounds) else { continue }
+        window.displayIfNeeded()
+        RunLoop.current.run(until: Date().addingTimeInterval(0.4))
+        guard let bitmap = view.bitmapImageRepForCachingDisplay(in: view.bounds) else { return }
         view.cacheDisplay(in: view.bounds, to: bitmap)
         if let data = bitmap.representation(using: .png, properties: [:]) {
-            try data.write(to: output.appendingPathComponent("settings-\(actions.localizer.code).png"))
+            try data.write(to: output.appendingPathComponent(name + ".png"))
         }
         controller.close()
     }
+    for language: AppLanguage in [.en, .zhHans, .ja] {
+        actions.setLanguage(language)
+        let controller = SettingsWindowController(actions: actions)
+        try save(controller, name: "settings-\(actions.localizer.code)")
+        for (name, stage) in [("welcome", OnboardingStage.welcome), ("permissions", .permissions),
+                              ("demo", .demonstration), ("complete", .complete), ("failed", .failed)] {
+            let onboarding = OnboardingWindowController(actions: actions)
+            onboarding.model.stage = stage
+            onboarding.model.progress = stage == .demonstration ? 0.5 : 1
+            if stage == .failed { onboarding.model.error = NativeGammaError.unsupportedDisplay.localizedDescription }
+            try save(onboarding, name: "onboarding-\(name)-\(actions.localizer.code)")
+        }
+    }
+    actions.setLanguage(.en)
+    try save(SettingsWindowController(actions: actions), name: "settings-narrow", width: 560)
+    NSApp.appearance = NSAppearance(named: .darkAqua)
+    try save(SettingsWindowController(actions: actions), name: "settings-dark")
 }
 
 do {
@@ -68,11 +89,11 @@ do {
         try watchRecovery(in: args[index + 1], token: args[index + 2])
     } else if args.contains("--check-localizations") {
         let english = Localizer.load("en")
-        guard !english.isEmpty else { throw BrightnessError.commandFailed(operation: "Missing English resources") }
+        guard !english.isEmpty else { throw CocoaError(.fileReadCorruptFile) }
         for code in ["en", "zh-Hans", "ja"] {
             let strings = Localizer.load(code)
             guard Set(strings.keys) == Set(english.keys), strings.values.allSatisfy({ !$0.isEmpty }) else {
-                throw BrightnessError.commandFailed(operation: "Incomplete localization: \(code)")
+                throw CocoaError(.fileReadCorruptFile, userInfo: [NSLocalizedDescriptionKey: "Incomplete localization: \(code)"])
             }
             print("PASS \(code): \(strings.count) strings")
         }

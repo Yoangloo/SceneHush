@@ -1,14 +1,23 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" fill="none">
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" role="img" aria-label="SceneHush day and night switch">
   <defs>
-    <linearGradient id="night" x1="180" y1="100" x2="800" y2="960" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#142638"/><stop offset="1" stop-color="#060E1C"/>
-    </linearGradient>
+    <linearGradient id="tile" x1="0" y1="1" x2="1" y2="0"><stop stop-color="#f9f6ee"/><stop offset=".5" stop-color="#eef1f5"/><stop offset="1" stop-color="#c8d5e3"/></linearGradient>
+    <linearGradient id="shell" x1="0" y1="1" x2="0" y2="0"><stop stop-color="#fff"/><stop offset="1" stop-color="#b0becf"/></linearGradient>
+    <linearGradient id="track"><stop stop-color="#eed3a7"/><stop offset=".5" stop-color="#b3c6d8"/><stop offset="1" stop-color="#667e9d"/></linearGradient>
+    <linearGradient id="night" x1=".4" y1="1" x2=".6" y2="0"><stop stop-color="#466386"/><stop offset=".5" stop-color="#172f50"/><stop offset="1" stop-color="#152c49"/></linearGradient>
+    <filter id="tile-shadow" x="-.1" y="-.1" width="1.2" height="1.2"><feDropShadow dx="0" dy="-10" stdDeviation="14" flood-color="#192c48" flood-opacity=".2"/></filter>
+    <filter id="switch-shadow" x="-.2" y="-.3" width="1.4" height="1.6"><feDropShadow dx="0" dy="-22" stdDeviation="18" flood-color="#192c48" flood-opacity=".23"/></filter>
+    <filter id="thumb-shadow" x="-.2" y="-.2" width="1.4" height="1.4"><feDropShadow dx="0" dy="-8" stdDeviation="12" flood-color="#192c48" flood-opacity=".32"/></filter>
   </defs>
-  <rect x="42" y="42" width="940" height="940" rx="210" fill="url(#night)"/>
-  <g stroke="#85A8B8" stroke-opacity=".5" stroke-width="26" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M245 398V269H374"/><path d="M650 269H779V398"/><path d="M245 626V755H374"/>
+  <g transform="translate(0 1024) scale(1 -1)">
+    <rect x="44" y="44" width="936" height="936" rx="214" fill="url(#tile)" stroke="#fff" stroke-opacity=".72" stroke-width="3" filter="url(#tile-shadow)"/>
+    <rect x="135" y="321" width="754" height="382" rx="191" fill="url(#shell)" filter="url(#switch-shadow)"/>
+    <rect x="153" y="339" width="718" height="346" rx="173" fill="url(#track)" stroke="#4b607d" stroke-opacity=".19" stroke-width="4"/>
+    <g fill="#9a602b" stroke="#9a602b" stroke-width="12" stroke-linecap="round">
+      <circle cx="337" cy="512" r="45" stroke="none"/>
+      <path d="M408 512h20m-162 0h-20m91 71v20m0-162v-20m50.205 141.205 14.142 14.142m-114.552 0 14.142-14.142m100.41-100.41-14.142 14.142m-100.41-14.142 14.142 14.142" fill="none"/>
+    </g>
+    <circle cx="692" cy="512" r="149" fill="url(#night)" stroke="#fff" stroke-opacity=".6" stroke-width="4" filter="url(#thumb-shadow)"/>
+    <path d="M813.27 587.78 A143 143 0 0 1 576.31 596.06" fill="none" stroke="#fff" stroke-opacity=".54" stroke-width="3" stroke-linecap="round"/>
+    <path d="M709 599C651 575 675 480 760 456C697 409 621 441 623 500C619 554 657 600 709 599Z" fill="#fff6dd"/>
   </g>
-  <path d="M650 755H779V626" stroke="#ADF7D4" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M582 345C433 403 451 598 650 638C531 730 354 666 362 536C350 410 454 313 582 345Z" fill="#E3F5F7"/>
 </svg>
-

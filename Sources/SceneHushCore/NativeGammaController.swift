@@ -5,11 +5,15 @@ import Foundation
 
 public enum NativeGammaError: LocalizedError, Equatable {
     case displayListUnavailable
+    case noConnectedDisplays
     case displayUnavailable
     case unsupportedDisplay
     case invalidTable
     case invalidSnapshot
     case invalidRecoveryLease
+    case missingSnapshot
+    case invalidProgress
+    case legacyRestorationRequired
     case operationFailed(operation: String, status: Int32)
     case verificationFailed
     case restorePending(count: Int)
@@ -17,11 +21,16 @@ public enum NativeGammaError: LocalizedError, Equatable {
     public var errorDescription: String? {
         switch self {
         case .displayListUnavailable: return "The connected display list could not be read."
+        case .noConnectedDisplays: return "No connected displays were found."
         case .displayUnavailable: return "A display is no longer connected."
         case .unsupportedDisplay: return "A display does not support native gamma control."
         case .invalidTable: return "A display's original gamma table could not be read safely."
         case .invalidSnapshot: return "The saved native display state is invalid."
         case .invalidRecoveryLease: return "The native recovery session identifier is invalid."
+        case .missingSnapshot: return "No saved display state is available for gradual restoration."
+        case .invalidProgress: return "Display restoration progress must be a finite value between 0 and 1."
+        case .legacyRestorationRequired:
+            return "A previous version has brightness awaiting restoration. Restore it with that version before starting a new dimming session."
         case .operationFailed(let operation, let status):
             return "macOS rejected the native display \(operation) operation (\(status))."
         case .verificationFailed: return "A display did not retain the requested gamma table."
@@ -71,6 +80,11 @@ public struct GammaTable: Codable, Equatable {
     fileprivate var black: GammaTable {
         let zeros = [Float](repeating: 0, count: red.count)
         return GammaTable(red: zeros, green: zeros, blue: zeros)
+    }
+
+    fileprivate func scaled(by factor: Float) -> GammaTable {
+        GammaTable(red: red.map { $0 * factor }, green: green.map { $0 * factor },
+                   blue: blue.map { $0 * factor })
     }
 }
 
@@ -169,7 +183,7 @@ public final class CoreGraphicsGammaDriver: GammaDisplayDriving {
     }
 }
 
-/// Call capture, dim, verification and restore on the same serial queue.
+/// Call capture, dim, progress updates, verification and restore on the same serial queue.
 public final class NativeGammaController {
     public let paths: RuntimePaths
     private let driver: GammaDisplayDriving
@@ -216,7 +230,7 @@ public final class NativeGammaController {
 
     private func captureUnlocked() throws -> [GammaDisplayState] {
         let displays = try driver.connectedDisplays()
-        guard !displays.isEmpty else { throw BrightnessError.noConnectedDisplays }
+        guard !displays.isEmpty else { throw NativeGammaError.noConnectedDisplays }
         guard validIdentifiers(displays.map(\.uuid)) else { throw NativeGammaError.displayListUnavailable }
         return try displays.map {
             let table = try driver.read(uuid: $0.uuid)
@@ -251,6 +265,35 @@ public final class NativeGammaController {
 
     public func restore() throws {
         try withExclusiveAccess { try restoreUnlocked() }
+    }
+
+    /// Progress always derives from saved originals, never from a previously scaled table.
+    /// Call `restore()` after the last frame, on cancellation, or before leaving the demo.
+    public func setRestoreProgress(_ progress: Double) throws {
+        guard progress.isFinite, (0...1).contains(progress) else { throw NativeGammaError.invalidProgress }
+        try withExclusiveAccess {
+            guard hasPendingSnapshot else { throw NativeGammaError.missingSnapshot }
+            let saved = try loadSnapshot()
+            do {
+                let connected = try driver.connectedDisplays().map(\.uuid)
+                guard validIdentifiers(connected) else { throw NativeGammaError.displayListUnavailable }
+                guard Set(saved.map(\.uuid)).isSubset(of: Set(connected)) else {
+                    throw NativeGammaError.displayUnavailable
+                }
+                for state in saved {
+                    let target = state.table.scaled(by: Float(progress))
+                    try driver.write(target, uuid: state.uuid)
+                    guard try driver.read(uuid: state.uuid).isApproximatelyEqual(to: target) else {
+                        throw NativeGammaError.verificationFailed
+                    }
+                }
+            } catch {
+                let originalError = error
+                do { try restoreUnlocked() }
+                catch { logger("Gradual restoration rollback has pending display restoration.") }
+                throw originalError
+            }
+        }
     }
 
     private func restoreUnlocked() throws {

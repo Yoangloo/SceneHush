@@ -4,21 +4,23 @@ import SceneHushCore
 
 let restoreNotification = Notification.Name("io.github.yoangloo.SceneHush.restore")
 
-final class AppDelegate: NSObject, NSApplicationDelegate, SettingsActions {
-    enum Phase { case idle, dimming, dark, restoring }
-    let paths = RuntimePaths()
+final class AppDelegate: NSObject, NSApplicationDelegate, OnboardingActions {
+    enum Phase { case idle, dimming, dark, restoring, demonstrating }
+    let paths: RuntimePaths
     lazy var store = ConfigurationStore(paths: paths)
     lazy var nativeCorners = NativeHotCorners(paths: paths)
     lazy var controller = DisplayDimmingController(paths: paths, logger: { [weak self] in self?.log($0) })
     lazy var recoveryMonitor = DisplayRecoveryMonitor(paths: paths)
     let worker = DispatchQueue(label: "io.github.yoangloo.SceneHush.brightness")
+    lazy var demonstration = DisplayDemonstration(controller: controller, recovery: recoveryMonitor, queue: worker)
     var configuration = Configuration()
     var localizer: Localizer { Localizer(configuration.language) }
-    var backendAvailable: Bool { controller.isAvailable(configuration.dimmingMethod) }
     var loginEnabled: Bool { SMAppService.mainApp.status == .enabled }
     var lastIssue: String?
     var item: NSStatusItem!
     var settings: SettingsWindowController?
+    var onboarding: OnboardingWindowController?
+    var onboardingPresented = false
     var timer: Timer?
     var phase: Phase = .idle
     var previousInside: Bool?
@@ -27,14 +29,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate, SettingsActions {
     var quitting = false
     var cornerConflict = false
 
+    init(paths: RuntimePaths = RuntimePaths()) { self.paths = paths; super.init() }
+
     func applicationDidFinishLaunching(_ notification: Notification) {
-        let firstLaunch = !FileManager.default.fileExists(atPath: paths.configURL.path)
         do { try paths.ensureDirectory(); configuration = try store.load() }
         catch { lastIssue = localizer("error.config"); log(error.localizedDescription); configuration.enabled = false }
         item = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
         item.button?.title = ""
         item.button?.imagePosition = .imageOnly
         cornerConflict = nativeCorners.hasConflict(configuration.selectedCorner)
+        if controller.hasLegacySnapshot { lastIssue = localizer("error.legacy") }
         refresh()
         DistributedNotificationCenter.default().addObserver(self, selector: #selector(restoreNow),
                                                            name: restoreNotification, object: nil)
@@ -47,10 +51,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, SettingsActions {
         timer = Timer(timeInterval: 0.1, repeats: true) { [weak self] _ in self?.tick() }
         timer?.tolerance = 0.025
         RunLoop.main.add(timer!, forMode: .common)
-        if firstLaunch || !backendAvailable || CommandLine.arguments.contains("--settings") {
-            showSettings()
+        if !configuration.onboardingCompleted || CommandLine.arguments.contains("--onboarding") { showOnboarding() }
+        else if CommandLine.arguments.contains("--settings") { showSettings() }
+        if cornerConflict && configuration.onboardingCompleted && !onboardingPresented {
+            DispatchQueue.main.async { self.resolveInitialConflict() }
         }
-        if cornerConflict { DispatchQueue.main.async { self.resolveInitialConflict() } }
         log("Started SceneHush")
     }
 
@@ -70,7 +75,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, SettingsActions {
 
     func refresh() {
         let l = localizer
-        item?.button?.image = NSImage(systemSymbolName: phase == .dark ? "moon.fill" : "sun.min", accessibilityDescription: "SceneHush")
+        item?.button?.image = NSImage(systemSymbolName: "switch.2", accessibilityDescription: "SceneHush")
         item?.button?.toolTip = "SceneHush — " + l("subtitle")
         let menu = NSMenu()
         @discardableResult func add(_ title: String, _ action: Selector?, to parent: NSMenu? = nil, tag: Int = 0, selected: Bool = false) -> NSMenuItem {
@@ -81,12 +86,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate, SettingsActions {
         }
         add("SceneHush", nil)
         add(l("enabled"), #selector(toggleEnabled), selected: configuration.enabled)
-        let methods = NSMenu()
-        for (index, method) in DimmingMethod.allCases.enumerated() {
-            add(l("method." + method.rawValue), #selector(chooseMethod), to: methods, tag: index,
-                selected: method == configuration.dimmingMethod)
-        }
-        add(l("method.label"), nil).submenu = methods
         let cornerMenu = NSMenu()
         for (index, corner) in Corner.allCases.enumerated() {
             _ = add(l.corner(corner), #selector(chooseCorner), to: cornerMenu, tag: index, selected: corner == configuration.selectedCorner)
@@ -105,17 +104,20 @@ final class AppDelegate: NSObject, NSApplicationDelegate, SettingsActions {
         menu.addItem(.separator())
         add(l("restore.now"), #selector(restoreNow))
         add(l("settings"), #selector(showSettings))
+        add(l("onboarding.replay"), #selector(showOnboarding))
         add(l("about"), #selector(about))
         menu.addItem(.separator())
         add(l("quit"), #selector(quit))
         item?.menu = menu
         settings?.rebuild()
+        onboarding?.rebuild()
     }
 
     func tick() {
         let inside = NSScreen.screens.contains { configuration.selectedCorner.contains(point: NSEvent.mouseLocation, in: $0.frame) }
         defer { previousInside = inside }
-        guard configuration.enabled, !quitting, !cornerConflict else { return }
+        guard configuration.enabled, configuration.onboardingCompleted,
+              !onboardingPresented, !quitting, !cornerConflict else { return }
         guard let previous = previousInside else { return }
         if configuration.restoreOnExit {
             if inside != previous { wantDim = inside; reconcile() }
@@ -125,7 +127,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, SettingsActions {
     }
 
     func reconcile() {
-        guard phase != .dimming && phase != .restoring else { return }
+        guard phase != .dimming && phase != .restoring && phase != .demonstrating else { return }
         if (phase == .dark && !wantDim) || recoveryRequested {
             phase = .restoring; recoveryRequested = false
             worker.async {
@@ -140,11 +142,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, SettingsActions {
             }
         } else if phase == .idle && wantDim && !quitting {
             phase = .dimming
-            let method = configuration.dimmingMethod
             worker.async {
                 let result = Result {
-                    if method == .native { try self.recoveryMonitor.startIfNeeded() }
-                    try self.controller.dim(using: method)
+                    try self.recoveryMonitor.startIfNeeded()
+                    try self.controller.dim()
                 }
                 DispatchQueue.main.async {
                     switch result {
@@ -176,13 +177,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate, SettingsActions {
         configuration.selectedCorner = corner; previousInside = nil; cornerConflict = false; persist()
     }
     func setLanguage(_ language: AppLanguage) { configuration.language = language; lastIssue = nil; persist() }
-    func setDimmingMethod(_ method: DimmingMethod) {
-        restoreNow()
-        configuration.dimmingMethod = method
-        previousInside = nil
-        lastIssue = nil
-        persist()
-    }
     func setRestoreOnExit(_ value: Bool) {
         configuration.restoreOnExit = value
         if value && previousInside != true { wantDim = false; reconcile() }
@@ -202,20 +196,66 @@ final class AppDelegate: NSObject, NSApplicationDelegate, SettingsActions {
         refresh()
     }
 
-    @objc func restoreNow() { wantDim = false; recoveryRequested = true; reconcile() }
+    @objc func restoreNow() {
+        wantDim = false
+        if phase == .demonstrating { onboarding?.model.cancel(); return }
+        recoveryRequested = true; reconcile()
+    }
     @objc func displaysChanged() {
         previousInside = nil
         cornerConflict = nativeCorners.hasConflict(configuration.selectedCorner)
         restoreNow()
     }
     @objc func showSettings() {
+        guard configuration.onboardingCompleted else { showOnboarding(); return }
         if settings == nil { settings = SettingsWindowController(actions: self) }
         settings?.rebuild(); settings?.show()
+    }
+    @objc func showOnboarding() {
+        if onboardingPresented { onboarding?.show(); return }
+        restoreNow()
+        onboardingPresented = true; previousInside = nil
+        settings?.close()
+        onboarding = OnboardingWindowController(actions: self)
+        onboarding?.show()
+    }
+    func startDemonstration(progress: @escaping (Double) -> Void, completion: @escaping (Result<Void, Error>) -> Void) {
+        guard phase == .idle, !quitting else {
+            completion(.failure(NSError(domain: "SceneHush", code: 1,
+                                        userInfo: [NSLocalizedDescriptionKey: localizer("onboarding.busy")])))
+            return
+        }
+        wantDim = false; phase = .demonstrating
+        demonstration.start(progress: progress) { result in
+            self.phase = .idle
+            if case .failure(let error) = result { self.lastIssue = self.localizer("error.dim"); self.log(error.localizedDescription) }
+            self.refresh(); completion(result)
+            if self.quitting { self.reconcile() }
+        }
+    }
+    func cancelDemonstration(completion: @escaping (Result<Void, Error>) -> Void) {
+        demonstration.cancel { result in
+            self.phase = .idle
+            if case .failure(let error) = result { self.lastIssue = self.localizer("error.restore"); self.log(error.localizedDescription) }
+            self.refresh(); completion(result)
+            if self.quitting { self.reconcile() }
+        }
+    }
+    func finishOnboarding() {
+        guard phase != .demonstrating else { return }
+        configuration.onboardingCompleted = true
+        onboardingPresented = false; previousInside = nil
+        onboarding?.finish(); onboarding = nil
+        persist(); showSettings()
+        if cornerConflict { DispatchQueue.main.async { self.resolveInitialConflict() } }
+    }
+    func onboardingClosed() {
+        onboardingPresented = false; previousInside = nil
+        restoreNow()
     }
     @objc func toggleEnabled() { setEnabled(!configuration.enabled) }
     @objc func chooseCorner(_ sender: NSMenuItem) { setCorner(Corner.allCases[sender.tag]) }
     @objc func chooseLanguage(_ sender: NSMenuItem) { setLanguage(AppLanguage.allCases[sender.tag]) }
-    @objc func chooseMethod(_ sender: NSMenuItem) { setDimmingMethod(DimmingMethod.allCases[sender.tag]) }
     @objc func chooseRestore(_ sender: NSMenuItem) { setRestoreOnExit(sender.tag == 0) }
     @objc func toggleLogin() { setLoginEnabled(!loginEnabled) }
     @objc func quit() { NSApp.terminate(nil) }
@@ -261,6 +301,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, SettingsActions {
     }
     func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool { showSettings(); return true }
     func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
-        quitting = true; wantDim = false; recoveryRequested = true; reconcile(); return .terminateLater
+        quitting = true; wantDim = false; recoveryRequested = true
+        if phase == .demonstrating { cancelDemonstration { _ in } }
+        else { reconcile() }
+        return .terminateLater
     }
 }

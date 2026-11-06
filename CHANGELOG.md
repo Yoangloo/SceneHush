@@ -2,6 +2,23 @@
 
 Changes are grouped by release. Dates use the release's calendar date.
 
+## 1.2.0 — 2026-11-05
+
+### Added
+
+- A first-run introduction explaining permissions, with an optional all-display dark-to-light demonstration that restores saved RGB tables over five seconds.
+- Immediate restoration with Escape during the demonstration, introduction replay, and paused corner triggers while the introduction is open.
+- A day/night switch icon, centered name and slogan, aligned settings, a subtle background, and native Liquid Glass controls on macOS 26+, with fallback controls on earlier systems.
+- English, Simplified Chinese, and Japanese guidance for the introduction and permission requirements.
+
+### Changed
+
+- Use native macOS display control exclusively; remove BetterDisplay integration and the dimming-method selector.
+- Preserve existing corner, restoration, and language preferences, and ignore the removed dimming-method field.
+- Extend saved-state restoration to gradual display output changes; a recovery watchdog also covers the introduction demonstration.
+- Preserve old external-app brightness files and prevent new dimming while one is pending, so users can restore it with the previous release first.
+- Clarify that display control needs no Accessibility, Screen Recording, or administrator permission; launch at login remains optional and may need approval.
+
 ## 1.1.0 — 2026-11-05
 
 ### Added

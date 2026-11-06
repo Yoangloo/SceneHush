@@ -20,14 +20,14 @@ body:
     id: versions
     attributes:
       label: Versions
-      description: macOS and SceneHush versions. Include the BetterDisplay version only if using that optional mode.
+      description: macOS and SceneHush versions, and Mac architecture (Apple Silicon or Intel).
     validations:
       required: true
   - type: textarea
     id: displays
     attributes:
       label: Display setup
-      description: Selected dimming method, built-in/external display models, connection type, and whether HDR or virtual displays are enabled. Please omit serial numbers.
+      description: Built-in/external display models, connection type, and whether HDR or virtual displays are enabled. Say whether this happened during introduction, corner dimming, or restoration. Please omit serial numbers.
   - type: textarea
     id: logs
     attributes:

@@ -1,70 +1,61 @@
-# SceneHush 1.1.0
+# SceneHush 1.2.0
 
 ## English
 
-**New in 1.1.0:** SceneHush now runs on its own. Native macOS display control is the default; BetterDisplay is an optional compatibility mode.
+**Native, from the first hello.** SceneHush now uses macOS display control only. BetterDisplay integration and the dimming-method selector have been removed.
 
-Move the pointer into a chosen corner to make connected, supported display output dark. By default, moving away restores the saved display state. The menu bar shows only an icon; open its menu to see the SceneHush name.
+This release makes the first run a short, understandable experience: learn what SceneHush changes, see which permissions it needs, then try an optional five-second demonstration. Your connected, supported screens go dark and slowly return to their saved appearance. Press Escape to restore immediately, or skip the demonstration. Corner triggers stay paused while the introduction is open. Finish to enter settings, and replay the introduction whenever you want.
 
-The project began with a MacBook and external monitor: one bottom-right-corner action to dim both through the BetterDisplay already installed. It grew into a small tool for short breaks while a computer agent has work in progress. This release removes the extra-app requirement for native mode, while keeping the current desktop session. Some desktop workflows can be interrupted by locking or sleeping; other agents continue independently. SceneHush does not prevent sleep or automatic locking, and does not guarantee continued agent execution.
+**Only the display output changes. SceneHush does not pause your agents.** It leaves the desktop session in place, without a black overlay or a logout. This is for a short break when leaving that session unlocked is acceptable. It does not prevent sleep or automatic locking, guarantee agent compatibility, or ensure task completion.
 
-- Native mode uses CoreGraphics gamma controls, with no desktop overlay and no BetterDisplay dependency.
-- Choose any of the four corners, with restore on exit or on the next corner entry.
-- Switch the menu and settings between English, Simplified Chinese, Japanese, and the system language.
-- Use optional BetterDisplay mode for another display-control path. It requires BetterDisplay running with command-line integration enabled.
-- Save display state locally before dimming and attempt restoration after a reported failure. A watchdog attempts recovery after an unexpected main-app exit in native mode only; it does not monitor BetterDisplay mode.
-- Enable launch at login, pause the trigger, or restore from the menu. Recovery data stays on your Mac, without telemetry or background network requests.
+- No Accessibility, Screen Recording, or administrator permission is needed for display control and corner detection. Optional launch at login may require approval in macOS Login Items.
+- A new day/night switch icon, centered name and slogan, aligned settings, a subtle background, and Liquid Glass controls on macOS 26+. Earlier systems use native fallback controls.
+- Four corner choices, restore on exit or next entry, menu bar icon only, and immediate English / 简体中文 / 日本語 switching remain available.
+- Display state stays on your Mac. A recovery watchdog attempts restoration after an unexpected exit, including during the demonstration. No telemetry or background network requests.
+- Existing corner, restoration, and language choices are retained. Restore displays and quit an older release before upgrading. Old external-app brightness files are preserved; if one is still pending, use the previous release to restore it before dimming with this version.
 
-**Display compatibility:** native mode darkens RGB display output. It does not set the hardware brightness slider to 0% or guarantee that the backlight or display power turns off. HDR, virtual displays, and some drivers may not support native control or may override it. A reported failure triggers a restoration attempt and an error; optional BetterDisplay mode is another choice for that setup. No desktop overlay is added, but screen-capture and agent behavior still need validation in your own environment.
+**Compatibility:** requires macOS 13+, Apple Silicon or Intel, and compatible display gamma control. RGB output becomes dark; the hardware brightness slider, backlight, and display power are not switched off. HDR, virtual displays, or some drivers may not support the control or may override it. Validate your actual capture and agent workflow.
 
-**Install:** download the universal DMG or ZIP and move SceneHush.app into Applications. Requires macOS 13+ on Apple Silicon or Intel. Native mode needs no separate app.
+**Install:** download the universal DMG or ZIP and move SceneHush.app into Applications. This release is ad-hoc signed, without Developer ID signing or Apple notarization. If macOS blocks it, verify the release source and use System Settings → Privacy & Security → Open Anyway only after confirming trust.
 
-**Signing:** this release is ad-hoc signed, without Developer ID signing or Apple notarization. If macOS blocks it, verify that you trust the release, then use System Settings → Privacy & Security → Open Anyway. Source build and checksum instructions are in the README.
-
-**Not a lock screen:** SceneHush adds no authentication. Anyone nearby may restore the display and use the unlocked Mac. Use macOS Lock Screen in public or shared environments, or whenever the computer must be left securely unattended. A dark screen is not a privacy boundary.
+**Not a lock screen:** there is no authentication. Anyone nearby may restore the display and use the unlocked Mac. Use macOS Lock Screen when the computer must be left securely unattended.
 
 ## 简体中文
 
-**1.1.0 更新：** SceneHush 现在可以独立运行。默认使用 macOS 原生显示控制，BetterDisplay 改为可选兼容模式。
+**从第一次打开，就是纯原生。** SceneHush 现在只使用 macOS 显示控制，已移除 BetterDisplay 集成及调暗方式选项。
 
-把鼠标移到选定角落，让已连接且受支持屏幕的显示输出暗下来。默认移开鼠标后，恢复保存的显示状态。顶部菜单栏只显示图标，点开菜单后可看到 SceneHush 名称。
+首次使用变得更直观：先了解显示会发生什么变化、需要哪些权限，再选择体验 5 秒演示。已连接且受支持的屏幕会变黑，然后缓慢恢复到原来的显示状态。按 Escape 可立即恢复，也可以跳过演示。引导打开时暂停角落触发，完成后进入设置，之后随时可以重看。
 
-项目起于 MacBook 加外接屏的一个需求：通过右下角动作，用电脑上已有的 BetterDisplay 一起调暗两块屏幕。后来，它成为一个面向 agent 工作期间短暂离席的小工具。这一版让原生模式无需其他 App，同时保留当前桌面会话。一些桌面流程可能因锁屏或睡眠中断，另一些 agent 可以独立运行。SceneHush 不阻止休眠或自动锁屏，也不保证 agent 持续运行。
+**改变的只是显示输出，SceneHush 不会暂停你的 agent。** 它保留当前桌面会话，不添加黑色遮罩，也不退出登录，适合可以接受会话未锁定时的短暂离席。它不会阻止休眠或自动锁屏，不保证 agent 兼容性或任务完成。
 
-- 原生模式通过 CoreGraphics 伽马控制调暗显示输出，不添加桌面遮罩，也不依赖 BetterDisplay。
-- 四个角任选，支持移开恢复或再次进入角落时恢复。
-- 英语、简体中文、日语及跟随系统，即切即生效。
-- 可选 BetterDisplay 模式提供另一种显示控制方式；仅该模式需要运行 BetterDisplay 并开启命令行集成。
-- 调暗前在本机保存显示状态，在系统报告失败后尝试恢复。监护进程仅在原生模式下为主程序异常退出尝试恢复，不监护 BetterDisplay 模式。
-- 支持登录启动、暂停和菜单内恢复。恢复数据只保存在本机，无遥测或后台网络请求。
+- 显示控制和角落检测无需辅助功能、屏幕录制或管理员授权；可选的登录自动启动可能需要在 macOS“登录项”批准。
+- 新日夜开关图标、居中的名称与 slogan、对齐的设置、轻微底纹；macOS 26+ 使用液态玻璃控件，较早系统使用原生兼容控件。
+- 保留四角选择、移开或再次进入恢复、菜单栏仅图标，以及 English / 简体中文 / 日本語 即时切换。
+- 显示状态仅保存在本机，监护进程在主程序异常退出时尝试恢复，也覆盖引导演示。无遥测或后台网络请求。
+- 原有角落、恢复方式和语言偏好会保留。升级前先恢复显示并退出旧版；旧外部 App 亮度文件不会删除。如仍有待恢复的旧文件，请先用旧版恢复，再使用此版本调暗。
 
-**显示器兼容性：** 原生模式调暗 RGB 显示输出，不会将硬件亮度滑块设为 0%，也不保证背光关闭或屏幕断电。HDR、虚拟显示屏及部分驱动可能不支持原生控制，或会覆盖设置。系统报告失败后会尝试恢复并提示错误；可针对这套设备尝试可选的 BetterDisplay 模式。原生模式没有桌面遮罩，但截图和 agent 的实际表现仍需在自己的环境中验证。
+**兼容性：** 需要 macOS 13+、Apple Silicon 或 Intel，以及兼容的显示伽马控制。调暗的是 RGB 显示输出，不会把硬件亮度滑块设为 0%、关闭背光或让屏幕断电。HDR、虚拟屏及部分驱动可能不支持或会覆盖设置；请在自己的截图及 agent 流程中验证。
 
-**安装：** 下载通用版 DMG 或 ZIP，将 SceneHush.app 移到应用程序。需要 macOS 13+，支持 Apple Silicon 和 Intel；原生模式无需另装 App。
+**安装：** 下载通用版 DMG 或 ZIP，将 SceneHush.app 移到应用程序。此版本使用 ad-hoc 签名，尚无 Developer ID 签名及 Apple 公证。如 macOS 阻止打开，请核对并确认信任发布来源后，到系统设置 → 隐私与安全性 → 仍要打开。
 
-**签名状态：** 此版本使用 ad-hoc 签名，尚无 Developer ID 签名及 Apple 公证。如 macOS 阻止打开，请核对并确认信任该版本后，到系统设置 → 隐私与安全性 → 仍要打开。源码构建和校验说明见 README。
-
-**并非锁屏：** SceneHush 没有身份验证，旁人仍可恢复显示并操作这台未锁定的 Mac。公共、共享环境或需要安全地无人看管电脑时，请使用 macOS 系统锁屏。暗屏不构成隐私边界。
+**不是锁屏：** 没有身份验证，旁人仍可恢复显示并操作未锁定的 Mac。需要安全地无人看管电脑时，请使用 macOS 系统锁屏。
 
 ## 日本語
 
-**1.1.0 の変更点：** SceneHush が単独で動作するようになりました。macOS 標準の表示制御が既定となり、BetterDisplay は任意の互換モードになりました。
+**最初の起動から、macOS 標準だけで。** SceneHush は標準の表示制御専用になり、BetterDisplay 連携と調光方式の選択を削除しました。
 
-選んだ隅にポインタを移動すると、接続中の対応ディスプレイの出力が暗くなります。初期設定では、ポインタを離すと保存した表示状態に戻ります。メニューバーにはアイコンだけを表示し、開いたメニューに SceneHush の名前が表示されます。
+初回ガイドでは、表示の変化と必要な権限を確認し、任意で 5 秒間のデモを体験できます。接続中の対応画面が暗くなり、ゆっくりと保存した表示状態へ戻ります。Escape で直ちに復元でき、デモをスキップすることもできます。ガイド中はコーナー操作を一時停止し、完了すると設定が開きます。後から再表示も可能です。
 
-MacBook と外部モニターを、右下の操作で既存の BetterDisplay を使ってまとめて暗くしたい、という要望から生まれました。その後、エージェントの作業中に短く離席するためのツールへと育ちました。このリリースでは、ネイティブモードを追加アプリなしで使い、現在のデスクトップセッションを維持できます。一部のデスクトップ操作はロックやスリープで中断されますが、独立して動作するエージェントもあります。SceneHush はスリープや自動ロックを防がず、エージェントの動作継続を保証しません。
+**変わるのは画面出力だけです。SceneHush はエージェントを一時停止しません。** 黒いウインドウやログアウトを使わず、現在のデスクトップセッションを維持します。ロックしない状態を許容できる、短い離席のための機能です。スリープや自動ロックを防がず、エージェントとの互換性やタスクの完了を保証しません。
 
-- ネイティブモードは CoreGraphics のガンマ制御を使用し、デスクトップを覆うウインドウや BetterDisplay を必要としません。
-- 四隅から選び、ポインタを離したとき、または次に隅へ入ったときに復元できます。
-- 英語・簡体字中国語・日本語・システム言語をすぐに切り替えられます。
-- 任意の BetterDisplay モードで、別の制御方式を選べます。このモードのみ、BetterDisplay の起動とコマンドライン連携が必要です。
-- 調整前の表示状態を Mac 内に保存し、失敗の報告後に復元を試みます。異常終了時の復元用監視はネイティブモードのみで、BetterDisplay モードは対象外です。
-- ログイン時の起動、一時停止、メニューからの復元に対応します。復元データは Mac 内のみで、テレメトリーやバックグラウンド通信はありません。
+- 表示制御とコーナー検出にアクセシビリティ、画面収録、管理者の権限は不要です。任意のログイン時の起動には、macOS のログイン項目で承認が必要な場合があります。
+- 新しい昼夜スイッチのアイコン、中央揃えの名前とスローガン、整列した設定、控えめな背景。macOS 26+ は Liquid Glass、以前のシステムは標準の互換コントロールを使います。
+- 四隅の選択、離れたとき・次の操作時の復元、アイコンだけのメニューバー、English / 简体中文 / 日本語の即時切り替えを維持します。
+- 表示状態は Mac 内に保存します。監視プロセスはデモ中を含む異常終了時に復元を試みます。テレメトリーやバックグラウンド通信はありません。
+- 隅、復元方法、言語の設定は引き継ぎます。更新前に画面を復元して旧版を終了してください。外部アプリ用の古い輝度ファイルは削除せず、未復元のファイルがある場合は旧版で復元してから新版で調整してください。
 
-**ディスプレイの互換性：** ネイティブモードは RGB の表示出力を暗くします。ハードウェアの輝度スライダーを 0% に設定するものではなく、バックライト消灯や電源オフを保証しません。HDR、仮想ディスプレイ、一部のドライバーは制御に非対応の場合や、設定を上書きする場合があります。失敗が報告されると復元を試み、エラーを表示します。その環境では任意の BetterDisplay モードも選べます。デスクトップを覆うウインドウは追加しませんが、キャプチャーとエージェントの動作は利用環境で確認してください。
+**互換性：** macOS 13+、Apple Silicon または Intel と、対応するガンマ制御が必要です。RGB 出力を暗くしますが、ハードウェアの輝度、バックライト、電源はオフにしません。HDR、仮想画面、一部のドライバーは非対応や設定上書きの場合があります。実際のキャプチャーとエージェントの動作を利用環境で確認してください。
 
-**インストール：** Universal 版 DMG または ZIP をダウンロードし、SceneHush.app をアプリケーションに移動してください。macOS 13+、Apple Silicon と Intel に対応します。ネイティブモードでは別のアプリは不要です。
+**インストール：** Universal 版 DMG または ZIP をダウンロードし、SceneHush.app をアプリケーションへ移動します。このリリースは ad-hoc 署名で、Developer ID 署名や Apple の公証はありません。macOS にブロックされた場合は、配布元を信頼できることを確認してから、システム設定 → プライバシーとセキュリティ → このまま開くを選択してください。
 
-**署名：** このリリースは ad-hoc 署名のみで、Developer ID 署名と Apple の公証はありません。macOS にブロックされた場合は、配布元とリリースを信頼できることを確認してから、システム設定 → プライバシーとセキュリティ → このまま開くを選択してください。ソースのビルドとチェックサムは README を参照してください。
-
-**画面ロックではありません：** 認証機能はなく、他の人が画面を戻して、ロックされていない Mac を操作できます。公共・共有の場所や、安全のために無人のコンピューターを保護する必要がある場合は、macOS の画面ロックを使用してください。暗い画面はプライバシーを守る境界ではありません。
+**画面ロックではありません：** 認証機能はなく、他の人が画面を戻して、ロックされていない Mac を操作できます。無人のコンピューターを安全に保護する必要がある場合は、macOS の画面ロックを使ってください。

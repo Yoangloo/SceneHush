@@ -9,6 +9,24 @@ let assets = URL(fileURLWithPath: CommandLine.arguments[1], isDirectory: true)
 let iconset = assets.appendingPathComponent("SceneHush.iconset", isDirectory: true)
 try FileManager.default.createDirectory(at: iconset, withIntermediateDirectories: true)
 
+private func color(_ hex: UInt32, alpha: CGFloat = 1) -> NSColor {
+    NSColor(calibratedRed: CGFloat((hex >> 16) & 255) / 255,
+            green: CGFloat((hex >> 8) & 255) / 255,
+            blue: CGFloat(hex & 255) / 255, alpha: alpha)
+}
+
+private func gradient(_ colors: [NSColor], in path: NSBezierPath, angle: CGFloat) {
+    NSGradient(colors: colors)?.draw(in: path, angle: angle)
+}
+
+private func shadow(_ blur: CGFloat, offset: CGFloat, opacity: CGFloat) {
+    let value = NSShadow()
+    value.shadowColor = color(0x192C48, alpha: opacity)
+    value.shadowBlurRadius = blur
+    value.shadowOffset = NSSize(width: 0, height: offset)
+    value.set()
+}
+
 func render(_ pixels: Int, to output: URL) throws {
     guard let bitmap = NSBitmapImageRep(bitmapDataPlanes: nil, pixelsWide: pixels, pixelsHigh: pixels,
                                        bitsPerSample: 8, samplesPerPixel: 4, hasAlpha: true,
@@ -19,53 +37,95 @@ func render(_ pixels: Int, to output: URL) throws {
     }
     NSGraphicsContext.saveGraphicsState()
     NSGraphicsContext.current = context
-    let scale = CGFloat(pixels) / 1024
-    context.cgContext.scaleBy(x: scale, y: scale)
+    context.cgContext.scaleBy(x: CGFloat(pixels) / 1024, y: CGFloat(pixels) / 1024)
     context.imageInterpolation = .high
 
-    let background = NSBezierPath(roundedRect: NSRect(x: 42, y: 42, width: 940, height: 940),
-                                  xRadius: 210, yRadius: 210)
-    let shadow = NSShadow()
-    shadow.shadowColor = NSColor.black.withAlphaComponent(0.17)
-    shadow.shadowBlurRadius = 26
-    shadow.shadowOffset = NSSize(width: 0, height: -9)
-    shadow.set()
-    NSColor(calibratedRed: 0.025, green: 0.055, blue: 0.10, alpha: 1).setFill()
-    background.fill()
+    let tile = NSBezierPath(roundedRect: NSRect(x: 44, y: 44, width: 936, height: 936),
+                            xRadius: 214, yRadius: 214)
+    shadow(28, offset: -10, opacity: 0.20)
+    color(0xE2E9EF).setFill()
+    tile.fill()
     NSShadow().set()
-    NSGradient(colors: [NSColor(calibratedRed: 0.08, green: 0.15, blue: 0.22, alpha: 1),
-                        NSColor(calibratedRed: 0.025, green: 0.055, blue: 0.11, alpha: 1)])?
-        .draw(in: background, angle: -70)
+    gradient([color(0xF9F6EE), color(0xEEF1F5), color(0xC8D5E3)], in: tile, angle: -57)
 
-    let quiet = NSColor(calibratedRed: 0.52, green: 0.66, blue: 0.72, alpha: 0.50)
-    let accent = NSColor(calibratedRed: 0.68, green: 0.97, blue: 0.83, alpha: 1)
-    func corner(_ points: [NSPoint], color: NSColor, width: CGFloat) {
-        let path = NSBezierPath()
-        path.lineWidth = width
-        path.lineCapStyle = .round
-        path.lineJoinStyle = .round
-        path.move(to: points[0])
-        for point in points.dropFirst() { path.line(to: point) }
-        color.setStroke()
-        path.stroke()
+    // The warm and cool light belongs to the same day / night switch.
+    NSGraphicsContext.saveGraphicsState()
+    tile.addClip()
+    if pixels >= 128 {
+        // Deterministic grain, baked into the asset; no image or runtime dependency.
+        for index in 0..<2200 {
+            let x = CGFloat((index * 353 + 73) % 936) + 44
+            let y = CGFloat((index * 227 + 191) % 936) + 44
+            color(0x405572, alpha: 0.020).setFill()
+            NSBezierPath(ovalIn: NSRect(x: x, y: y, width: 1.3, height: 1.3)).fill()
+        }
     }
-    corner([NSPoint(x: 245, y: 626), NSPoint(x: 245, y: 755), NSPoint(x: 374, y: 755)], color: quiet, width: 26)
-    corner([NSPoint(x: 650, y: 755), NSPoint(x: 779, y: 755), NSPoint(x: 779, y: 626)], color: quiet, width: 26)
-    corner([NSPoint(x: 245, y: 398), NSPoint(x: 245, y: 269), NSPoint(x: 374, y: 269)], color: quiet, width: 26)
-    corner([NSPoint(x: 650, y: 269), NSPoint(x: 779, y: 269), NSPoint(x: 779, y: 398)], color: accent, width: 34)
+    NSGraphicsContext.restoreGraphicsState()
+    color(0xFFFFFF, alpha: 0.72).setStroke()
+    tile.lineWidth = pixels <= 32 ? 6 : 3
+    tile.stroke()
 
-    // A crescent drawn as one path preserves the gradient under its open side.
-    let crescent = NSBezierPath()
-    crescent.move(to: NSPoint(x: 582, y: 679))
-    crescent.curve(to: NSPoint(x: 650, y: 386),
-                   controlPoint1: NSPoint(x: 433, y: 621), controlPoint2: NSPoint(x: 451, y: 426))
-    crescent.curve(to: NSPoint(x: 362, y: 488),
-                   controlPoint1: NSPoint(x: 531, y: 294), controlPoint2: NSPoint(x: 354, y: 358))
-    crescent.curve(to: NSPoint(x: 582, y: 679),
-                   controlPoint1: NSPoint(x: 350, y: 614), controlPoint2: NSPoint(x: 454, y: 711))
-    crescent.close()
-    NSColor(calibratedRed: 0.89, green: 0.96, blue: 0.97, alpha: 1).setFill()
-    crescent.fill()
+    let shell = NSBezierPath(roundedRect: NSRect(x: 135, y: 321, width: 754, height: 382),
+                             xRadius: 191, yRadius: 191)
+    shadow(36, offset: -22, opacity: 0.23)
+    color(0xEDF0F2).setFill()
+    shell.fill()
+    NSShadow().set()
+    gradient([color(0xFFFFFF), color(0xB0BECF)], in: shell, angle: -90)
+
+    let track = NSBezierPath(roundedRect: NSRect(x: 153, y: 339, width: 718, height: 346),
+                             xRadius: 173, yRadius: 173)
+    gradient([color(0xEED3A7), color(0xB3C6D8), color(0x667E9D)], in: track, angle: 0)
+    color(0x4B607D, alpha: 0.19).setStroke()
+    track.lineWidth = 4
+    track.stroke()
+
+    let sunCenter = NSPoint(x: 337, y: 512)
+    let sun = NSBezierPath(ovalIn: NSRect(x: sunCenter.x - 45, y: sunCenter.y - 45, width: 90, height: 90))
+    color(0x9A602B).setFill()
+    sun.fill()
+    let rays = NSBezierPath()
+    rays.lineWidth = pixels <= 32 ? 18 : 12
+    rays.lineCapStyle = .round
+    for index in 0..<8 {
+        let angle = CGFloat(index) * .pi / 4
+        rays.move(to: NSPoint(x: sunCenter.x + cos(angle) * 71, y: sunCenter.y + sin(angle) * 71))
+        rays.line(to: NSPoint(x: sunCenter.x + cos(angle) * 91, y: sunCenter.y + sin(angle) * 91))
+    }
+    color(0x9A602B).setStroke()
+    rays.stroke()
+
+    let thumb = NSBezierPath(ovalIn: NSRect(x: 543, y: 363, width: 298, height: 298))
+    shadow(24, offset: -8, opacity: 0.32)
+    color(0x213A5D).setFill()
+    thumb.fill()
+    NSShadow().set()
+    gradient([color(0x466386), color(0x172F50), color(0x152C49)], in: thumb, angle: -80)
+    color(0xFFFFFF, alpha: 0.60).setStroke()
+    thumb.lineWidth = pixels <= 32 ? 7 : 4
+    thumb.stroke()
+    if pixels >= 128 {
+        let glint = NSBezierPath()
+        glint.appendArc(withCenter: NSPoint(x: 692, y: 512), radius: 143,
+                        startAngle: 32, endAngle: 144, clockwise: false)
+        color(0xFFFFFF, alpha: 0.54).setStroke()
+        glint.lineWidth = 3
+        glint.lineCapStyle = .round
+        glint.stroke()
+    }
+
+    // One closed crescent keeps the blue glass visible through its open side.
+    let moon = NSBezierPath()
+    moon.move(to: NSPoint(x: 709, y: 599))
+    moon.curve(to: NSPoint(x: 760, y: 456),
+               controlPoint1: NSPoint(x: 651, y: 575), controlPoint2: NSPoint(x: 675, y: 480))
+    moon.curve(to: NSPoint(x: 623, y: 500),
+               controlPoint1: NSPoint(x: 697, y: 409), controlPoint2: NSPoint(x: 621, y: 441))
+    moon.curve(to: NSPoint(x: 709, y: 599),
+               controlPoint1: NSPoint(x: 619, y: 554), controlPoint2: NSPoint(x: 657, y: 600))
+    moon.close()
+    color(0xFFF6DD).setFill()
+    moon.fill()
 
     NSGraphicsContext.restoreGraphicsState()
     guard let png = bitmap.representation(using: .png, properties: [:]) else {
@@ -79,4 +139,3 @@ for size in [16, 32, 128, 256, 512] {
     try render(size * 2, to: iconset.appendingPathComponent("icon_\(size)x\(size)@2x.png"))
 }
 try render(1024, to: assets.appendingPathComponent("SceneHush.png"))
-
