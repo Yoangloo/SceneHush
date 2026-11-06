@@ -79,9 +79,19 @@ static void verify(NSURL *root, NSDictionary *values) {
     NSURL *resolved = [NSURL URLByResolvingBookmarkData:values[@"bookmark"]
         options:NSURLBookmarkResolutionWithoutUI | NSURLBookmarkResolutionWithoutMounting
         relativeToURL:nil bookmarkDataIsStale:&stale error:&error];
-    if (!resolved || ![resolved.path.stringByResolvingSymlinksInPath
-            isEqualToString:expected.path.stringByResolvingSymlinksInPath])
-        fail(@"Background bookmark does not resolve inside this mounted volume");
+    // A bookmark can resolve to a file-reference URL whose path is not a POSIX path.
+    NSURL *resolvedPathURL = resolved.filePathURL;
+    if (!resolvedPathURL || ![resolvedPathURL.path.stringByResolvingSymlinksInPath
+            isEqualToString:expected.path.stringByResolvingSymlinksInPath]) {
+        fail([NSString stringWithFormat:
+            @"Background bookmark does not resolve inside this mounted volume\n"
+             "  expected: %@\n  resolved URL: %@\n  raw path: %@\n"
+             "  file-reference URL: %@\n  file path: %@\n  stale: %@\n  error: %@ (%ld): %@",
+            expected.path, resolved.absoluteString ?: @"<nil>", resolved.path ?: @"<nil>",
+            [resolved isFileReferenceURL] ? @"yes" : @"no", resolvedPathURL.path ?: @"<nil>",
+            stale ? @"yes" : @"no",
+            error.domain ?: @"<none>", (long)error.code, error.localizedDescription ?: @"<none>"]);
+    }
     NSData *aliasData = values[@"alias"];
     Handle handle = NewHandle(aliasData.length);
     if (!handle) fail(@"Could not allocate alias handle");
@@ -91,9 +101,15 @@ static void verify(NSURL *root, NSDictionary *values) {
     OSErr status = FSResolveAliasWithMountFlags(NULL, (AliasHandle)handle, &target, &changed, kResolveAliasFileNoUI);
     DisposeHandle(handle);
     UInt8 path[PATH_MAX];
-    if (status != noErr || FSRefMakePath(&target, path, sizeof(path)) != noErr ||
-        ![[@((char *)path) stringByResolvingSymlinksInPath] isEqualToString:expected.path.stringByResolvingSymlinksInPath])
-        fail(@"Background alias does not resolve inside this mounted volume");
+    OSStatus pathStatus = status == noErr ? FSRefMakePath(&target, path, sizeof(path)) : status;
+    NSString *aliasPath = pathStatus == noErr ? @((char *)path) : @"<nil>";
+    if (pathStatus != noErr || ![aliasPath.stringByResolvingSymlinksInPath
+            isEqualToString:expected.path.stringByResolvingSymlinksInPath]) {
+        fail([NSString stringWithFormat:
+            @"Background alias does not resolve inside this mounted volume\n"
+             "  expected: %@\n  resolved: %@\n  resolve status: %d\n  path status: %d",
+            expected.path, aliasPath, status, (int)pathStatus]);
+    }
     puts("Background alias and bookmark resolve inside the mounted volume");
 }
 
