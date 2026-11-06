@@ -6,6 +6,7 @@ from pathlib import Path
 import plistlib
 import subprocess
 import sys
+from urllib.parse import unquote, urlsplit
 
 sys.path.insert(0, str(Path(__file__).with_name("vendor")))
 from ds_store import DSStore
@@ -49,6 +50,26 @@ ICON_LOCATIONS = {
 }
 
 
+def sanitize_bookmark(data):
+    native = Bookmark.from_bytes(data)
+    if not native.tocs:
+        raise ValueError("Native background bookmark has no primary volume reference")
+    primary_id, primary = native.tocs[0]
+    # Native bookmarks can also locate the temporary writable image on the host.
+    # Keep its own file/volume fields, without publishing that backing-image path.
+    excluded = {
+        bookmark_format.kBookmarkVolumeBookmark,
+        bookmark_format.kBookmarkSandboxRwExtension,
+        bookmark_format.kBookmarkSandboxRoExtension,
+    }
+    primary = {key: value for key, value in primary.items() if key not in excluded}
+    if bookmark_format.kBookmarkUserName in primary:
+        primary[bookmark_format.kBookmarkUserName] = "unknown"
+    if bookmark_format.kBookmarkUID in primary:
+        primary[bookmark_format.kBookmarkUID] = 99
+    return Bookmark([(primary_id, primary)]).to_bytes()
+
+
 def check_metadata(metadata, volume=None):
     if set(metadata) != {"alias", "bookmark"}:
         raise ValueError("Expected native background alias and bookmark data")
@@ -60,19 +81,24 @@ def check_metadata(metadata, volume=None):
                 if private_path.encode(encoding) in data:
                     raise ValueError("Background metadata must not embed a host-machine path")
     bookmark = Bookmark.from_bytes(metadata["bookmark"])
-    if len(bookmark.tocs) != 1 or bookmark.tocs[0][0] != 1:
+    if len(bookmark.tocs) != 1:
         raise ValueError("Background bookmark must have only its own volume reference")
     toc = bookmark.tocs[0][1]
     if any(key in toc for key in (0x2040, 0xF080, 0xF081)):
         raise ValueError("Background bookmark must not contain backing-image locators or security scopes")
-    if toc.get(bookmark_format.kBookmarkPath) != [".background", "background.png"]:
-        raise ValueError("Background must be a relative path inside the image volume")
     volume_path = toc[bookmark_format.kBookmarkVolumePath]
     if Path(volume_path).parent != Path("/Volumes"):
         raise ValueError("Background reference must describe a mounted image volume")
-    if toc[bookmark_format.kBookmarkVolumeURL].absolute != "file://" + volume_path:
+    relative_path = [".background", "background.png"]
+    absolute_path = [*Path(volume_path).parts[1:], *relative_path]
+    if toc.get(bookmark_format.kBookmarkPath) not in (relative_path, absolute_path):
+        raise ValueError("Background path must stay inside its image volume")
+    volume_url = urlsplit(toc[bookmark_format.kBookmarkVolumeURL].absolute)
+    if (volume_url.scheme != "file" or volume_url.netloc or volume_url.query or volume_url.fragment
+            or unquote(volume_url.path) not in (volume_path, volume_path + "/")):
         raise ValueError("Background volume URL mismatch")
-    if toc[bookmark_format.kBookmarkUserName] != "unknown" or toc[bookmark_format.kBookmarkUID] != 99:
+    if (toc.get(bookmark_format.kBookmarkUserName, "unknown") != "unknown"
+            or toc.get(bookmark_format.kBookmarkUID, 99) != 99):
         raise ValueError("Background bookmark must not record a user's identity")
     alias = Alias.from_bytes(metadata["alias"])
     normalize = lambda value: value.decode("utf-8") if isinstance(value, bytes) else value
@@ -142,11 +168,14 @@ def main() -> None:
     parser.add_argument("volume", type=Path, help="Mounted image root")
     parser.add_argument("metadata", type=Path, help="Native background metadata plist; exported after checking")
     parser.add_argument("--check", action="store_true", help="Read the layout without modifying the volume")
+    parser.add_argument("--native-bookmark", type=Path, help="Bookmark created by VolumeAssets for this mounted volume")
     arguments = parser.parse_args()
     if not arguments.check:
+        if arguments.native_bookmark is None:
+            parser.error("Creating a layout requires --native-bookmark from VolumeAssets")
         background = arguments.volume / ".background/background.png"
         metadata = {"alias": Alias.for_file(str(background)).to_bytes(),
-                    "bookmark": Bookmark.for_file(str(background)).to_bytes()}
+                    "bookmark": sanitize_bookmark(arguments.native_bookmark.read_bytes())}
         write_layout(arguments.volume, metadata)
     metadata = inspect_layout(arguments.volume)
     with arguments.metadata.open("wb") as file:
