@@ -1,0 +1,23 @@
+name: Import reviewed native onboarding source
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/import-source.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Expand reviewed source and remove retired backend
+        run: |
+          unzip -o source-import.zip
+          chmod +x scripts/*.sh
+          git rm source-import.zip Sources/SceneHushCore/BrightnessController.swift
+          git add .
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Add native-only onboarding and day-night interface'
+          git push
