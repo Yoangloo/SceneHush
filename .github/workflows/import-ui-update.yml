@@ -1,0 +1,36 @@
+name: Import reviewed onboarding and window update
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/import-ui-update.yml']
+permissions:
+  contents: write
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 3
+      - name: Apply reviewed source and interface screenshots
+        run: |
+          test "$(git rev-parse HEAD~2)" = "bec646bc30c6d42f958b1e9d8147b13bbe3fbb35"
+          base64 --decode source-ui-update.b64 > /tmp/scenehush-ui-update.zip
+          echo 'ee663653ffa1378fd37f6a18952e03345de87a101cb4ea4f88e96f8c808fbe98  /tmp/scenehush-ui-update.zip' | sha256sum --check
+          python3 - <<'SCENEHUSH_EXTRACT'
+          import zipfile
+          from pathlib import PurePosixPath
+          with zipfile.ZipFile('/tmp/scenehush-ui-update.zip') as archive:
+              for name in archive.namelist():
+                  path = PurePosixPath(name)
+                  assert not path.is_absolute() and '..' not in path.parts and path.parts[0] != '.github'
+              archive.extractall('.')
+          SCENEHUSH_EXTRACT
+          chmod +x scripts/*.sh
+          git rm source-ui-update.b64
+          git diff --check
+          git add .
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Simplify onboarding and stabilize window layout across displays'
+          git push
