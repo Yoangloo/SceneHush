@@ -1,0 +1,174 @@
+name: Diagnose DMG bookmarks
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  bookmarks:
+    runs-on: macos-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Resolve lightweight HFS+ bookmark matrix
+        shell: bash
+        run: |
+          set -euo pipefail
+          PROJECT_ROOT="${1:-$PWD}"
+          PROBE_WORK="$(mktemp -d "${TMPDIR:-/tmp}/SceneHush-bookmark-probe.XXXXXX")"
+          PROBE_VOLUME=""
+          cleanup() {
+            if [[ -n "$PROBE_VOLUME" ]] && ! hdiutil detach "$PROBE_VOLUME" >/dev/null; then
+              printf 'Temporary volume remains mounted; keeping %s.\n' "$PROBE_WORK" >&2
+              return
+            fi
+            rm -rf "$PROBE_WORK"
+          }
+          trap cleanup EXIT
+          sw_vers
+          mkdir -p "$PROBE_WORK/source/.background"
+          printf 'SceneHush bookmark fixture\n' > "$PROBE_WORK/source/.background/background.png"
+          cat > "$PROBE_WORK/probe.m" <<'SCENEHUSH_OBJC'
+          #import <Foundation/Foundation.h>
+          #import <CoreServices/CoreServices.h>
+
+          static id nullable(id value) {
+              return value ?: [NSNull null];
+          }
+
+          static void emit(NSDictionary *record) {
+              NSError *error = nil;
+              NSData *data = [NSJSONSerialization dataWithJSONObject:record options:NSJSONWritingSortedKeys error:&error];
+              if (!data) {
+                  fprintf(stderr, "Could not encode probe output: %s\n", error.localizedDescription.UTF8String);
+                  exit(2);
+              }
+              [[NSFileHandle fileHandleWithStandardOutput] writeData:data];
+              [[NSFileHandle fileHandleWithStandardOutput] writeData:[@"\n" dataUsingEncoding:NSUTF8StringEncoding]];
+          }
+
+          static int failure(NSString *message) {
+              fprintf(stderr, "%s\n", message.UTF8String);
+              return 2;
+          }
+
+          static void resolve(NSString *name, NSData *data, NSString *label,
+                              NSURLBookmarkResolutionOptions flags, NSURL *expected) {
+              NSError *error = nil;
+              BOOL stale = NO;
+              NSURL *resolved = [NSURL URLByResolvingBookmarkData:data options:flags relativeToURL:nil
+                                        bookmarkDataIsStale:&stale error:&error];
+              NSURL *pathURL = resolved.filePathURL;
+              NSString *canonical = pathURL.path.stringByResolvingSymlinksInPath;
+              NSString *expectedPath = expected.path.stringByResolvingSymlinksInPath;
+              BOOL matches = canonical != nil && [canonical isEqualToString:expectedPath];
+              emit(@{
+                  @"variant": name,
+                  @"flags": label,
+                  @"data_size": @(data.length),
+                  @"resolvedURL": nullable(resolved.absoluteString),
+                  @"rawPath": nullable(resolved.path),
+                  @"filePath": nullable(pathURL.path),
+                  @"isFileReference": @([resolved isFileReferenceURL]),
+                  @"stale": @(stale),
+                  @"error_domain": nullable(error.domain),
+                  @"error_code": @(error.code),
+                  @"error_desc": nullable(error.localizedDescription),
+                  @"target_matches": @(matches)
+              });
+          }
+
+          int main(int argc, const char *argv[]) {
+              @autoreleasepool {
+                  if (argc != 3) return failure(@"Usage: probe EXPECTED_FILE VARIANTS.plist");
+                  NSURL *expected = [NSURL fileURLWithPath:@(argv[1]) isDirectory:NO];
+                  if (![[NSFileManager defaultManager] fileExistsAtPath:expected.path])
+                      return failure(@"Expected fixture file does not exist");
+                  NSError *error = nil;
+                  NSData *input = [NSData dataWithContentsOfFile:@(argv[2]) options:0 error:&error];
+                  if (!input) return failure([@"Could not read variants plist: " stringByAppendingString:error.localizedDescription]);
+                  id parsed = [NSPropertyListSerialization propertyListWithData:input options:NSPropertyListImmutable
+                                                                       format:NULL error:&error];
+                  if (![parsed isKindOfClass:[NSDictionary class]])
+                      return failure([NSString stringWithFormat:@"Variants must be a dictionary of name:NSData: %@",
+                                      error.localizedDescription ?: @"invalid property list type"]);
+                  NSMutableDictionary<NSString *, NSData *> *variants = [parsed mutableCopy];
+                  for (id key in variants) {
+                      if (![key isKindOfClass:[NSString class]] || ![variants[key] isKindOfClass:[NSData class]])
+                          return failure(@"Each variant must have a string name and NSData value");
+                  }
+                  emit(@{
+                      @"kind": @"metadata",
+                      @"os": NSProcessInfo.processInfo.operatingSystemVersionString,
+                      @"expectedURL": expected.absoluteString,
+                      @"expectedFile": expected.path,
+                      @"expectedCanonicalPath": expected.path.stringByResolvingSymlinksInPath
+                  });
+                  error = nil;
+                  NSData *native = [expected bookmarkDataWithOptions:
+                      NSURLBookmarkCreationMinimalBookmark | NSURLBookmarkCreationWithoutImplicitSecurityScope
+                      includingResourceValuesForKeys:nil relativeToURL:nil error:&error];
+                  if (!native) {
+                      emit(@{
+                          @"variant": @"native-minimal",
+                          @"phase": @"creation",
+                          @"error_domain": nullable(error.domain),
+                          @"error_code": @(error.code),
+                          @"error_desc": nullable(error.localizedDescription),
+                          @"target_matches": @NO
+                      });
+                      return failure(@"Native minimal bookmark creation failed; fixture is not a valid control");
+                  }
+                  if (variants[@"native-minimal"] != nil)
+                      return failure(@"Variant name native-minimal is reserved for the native control");
+                  variants[@"native-minimal"] = native;
+                  NSArray<NSString *> *names = [[variants allKeys] sortedArrayUsingSelector:@selector(compare:)];
+                  for (NSString *name in names) {
+                      resolve(name, variants[name], @"without-ui|without-mounting",
+                              NSURLBookmarkResolutionWithoutUI | NSURLBookmarkResolutionWithoutMounting, expected);
+                      resolve(name, variants[name], @"without-ui", NSURLBookmarkResolutionWithoutUI, expected);
+                  }
+              }
+              return 0;
+          }
+          SCENEHUSH_OBJC
+          xcrun clang -fobjc-arc -framework Foundation -framework CoreServices "$PROBE_WORK/probe.m" -o "$PROBE_WORK/probe"
+          hdiutil create -srcfolder "$PROBE_WORK/source" -volname "SceneHush Bookmark Probe" -fs HFS+ -format UDRW "$PROBE_WORK/probe.dmg"
+          hdiutil attach -readwrite -nobrowse -noautoopen -plist "$PROBE_WORK/probe.dmg" > "$PROBE_WORK/attach.plist"
+          PROBE_VOLUME="$(python3 -c 'import plistlib,sys; p=plistlib.load(open(sys.argv[1],"rb")); print(next(e["mount-point"] for e in p["system-entities"] if "mount-point" in e))' "$PROBE_WORK/attach.plist")"
+          python3 - "$PROJECT_ROOT" "$PROBE_VOLUME" "$PROBE_WORK/variants.plist" <<'SCENEHUSH_PYTHON'
+          import json
+          from pathlib import Path
+          import plistlib
+          import subprocess
+          import sys
+          sys.path.insert(0, str(Path(sys.argv[1]) / "scripts/installer/dmg/vendor"))
+          from mac_alias import Bookmark, URL
+          from mac_alias import bookmark as fields
+          volume = Path(sys.argv[2])
+          file = volume / ".background/background.png"
+          original = Bookmark.for_file(str(file)).to_bytes()
+          variants = {}
+          for encoded in (False, True):
+              for reference in (False, True):
+                  bookmark = Bookmark.from_bytes(original)
+                  toc = bookmark.tocs[0][1]
+                  if encoded:
+                      toc[fields.kBookmarkVolumeURL] = URL(Path(toc[fields.kBookmarkVolumePath]).as_uri())
+                  toc[fields.kBookmarkWasFileReference] = reference
+                  name = ("encoded" if encoded else "raw") + ("-reference" if reference else "-path")
+                  variants[name] = bookmark.to_bytes()
+                  print(json.dumps({"kind": "variant-input", "variant": name,
+                                    "volumeURL": toc[fields.kBookmarkVolumeURL].absolute,
+                                    "volumeUUID": toc[fields.kBookmarkVolumeUUID],
+                                    "path": toc[fields.kBookmarkPath],
+                                    "fileReference": reference}, ensure_ascii=False))
+          with Path(sys.argv[3]).open("wb") as output:
+              plistlib.dump(variants, output)
+          info = plistlib.loads(subprocess.check_output(["diskutil", "info", "-plist", str(volume)]))
+          print(json.dumps({"kind": "volume", **{key: info.get(key) for key in
+                ("VolumeName", "VolumeUUID", "FilesystemType", "MountPoint", "DeviceNode")}}, ensure_ascii=False))
+          SCENEHUSH_PYTHON
+          "$PROBE_WORK/probe" "$PROBE_VOLUME/.background/background.png" "$PROBE_WORK/variants.plist"
