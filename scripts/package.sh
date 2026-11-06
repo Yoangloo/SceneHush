@@ -76,7 +76,9 @@ hdiutil create -volname "SceneHush $APP_VERSION" -srcfolder "$DMG_STAGING" \
   -fs HFS+ -ov -format UDRW "$STAGING/writable.dmg"
 hdiutil attach -readwrite -nobrowse -noautoopen -plist "$STAGING/writable.dmg" > "$STAGING/attach.plist"
 DMG_MOUNT="$(python3 -c 'import plistlib,sys; p=plistlib.load(open(sys.argv[1],"rb")); print(next(e["mount-point"] for e in p["system-entities"] if "mount-point" in e))' "$STAGING/attach.plist")"
-python3 "$PROJECT_ROOT/scripts/installer/dmg/generate_layout.py" "$DMG_MOUNT" "$STAGING/background-metadata.plist"
+"$STAGING/VolumeAssets" bookmark "$DMG_MOUNT" "$STAGING/background.book"
+python3 "$PROJECT_ROOT/scripts/installer/dmg/generate_layout.py" "$DMG_MOUNT" "$STAGING/background-metadata.plist" \
+  --native-bookmark "$STAGING/background.book"
 "$STAGING/VolumeAssets" verify "$DMG_MOUNT" "$STAGING/background-metadata.plist"
 hdiutil detach "$DMG_MOUNT"
 DMG_MOUNT=""
