@@ -5,14 +5,14 @@
 [English](../README.md) · [简体中文](README.zh-CN.md) · [日本語](README.ja.md)
 
 <p>
-  <a href="https://github.com/Yoangloo/SceneHush/releases/download/v1.2.4/SceneHush-1.2.4-universal.pkg"><img src="../assets/download-macos-zh-Hans.svg" alt="下载 macOS 版" width="240" height="48"></a>
+  <a href="https://github.com/Yoangloo/SceneHush/releases/download/v1.2.5/SceneHush-1.2.5-universal.dmg"><img src="../assets/download-macos-zh-Hans.svg" alt="下载 macOS 版" width="240" height="48"></a>
 </p>
 
 <p>
-  <a href="https://github.com/Yoangloo/SceneHush/releases/download/v1.2.4/SceneHush-1.2.4-universal.zip">ZIP</a> · <a href="https://github.com/Yoangloo/SceneHush/releases/download/v1.2.4/SceneHush-1.2.4-universal.dmg">DMG</a> · <a href="https://github.com/Yoangloo/SceneHush/releases">所有版本</a>
+  <a href="https://github.com/Yoangloo/SceneHush/releases/download/v1.2.5/SceneHush-1.2.5-universal.zip">ZIP</a> · <a href="https://github.com/Yoangloo/SceneHush/releases">所有版本</a>
 </p>
 
-macOS 13+ · Apple Silicon 与 Intel · 双击 PKG，按系统安装器提示安装至**应用程序**。
+macOS 13+ · Apple Silicon 与 Intel · 打开 DMG，将 **SceneHush.app** 拖入**应用程序**。
 
 [安装被拦截？查看指引。](INSTALL.md#简体中文)
 
@@ -46,23 +46,28 @@ SceneHush 调整显示输出，不在桌面上盖黑色窗口；不会向 agent 
 
 ## 安装与首次使用
 
-1. 从 [Releases](https://github.com/Yoangloo/SceneHush/releases/latest) 下载 PKG。
-2. 双击 PKG，按系统安装器提示安装至**应用程序**。安装器可能要求管理员认证。安装完成后，从应用程序打开 **SceneHush**。
-3. 如 macOS 拦截安装器或 App，请先按[安装指引](INSTALL.md#简体中文)处理；正常打开后，点击「**开始**」了解权限，准备好后点击「**试试**」体验 5 秒演示。「**跳过**」位于右上角，左上角箭头用于返回上一步。
-4. 演示让已连接且受支持的屏幕变黑，再用 5 秒逐渐恢复原来的显示状态。按 **Escape** 可立即恢复；引导打开时暂停角落触发。
-5. 完成引导进入设置，选择触发角落，再将鼠标移入试用。
+1. 从 [Releases](https://github.com/Yoangloo/SceneHush/releases/latest) 下载 DMG。升级前请先恢复显示并退出旧版 SceneHush。
+2. 打开 DMG 即可看到安装提示，将 **SceneHush.app** 拖到**应用程序**。
+3. 从应用程序打开 **SceneHush**。如出现“Apple 无法验证”等提示，点击「**完成**」，再到**系统设置 → 隐私与安全性 → 仍要打开**，并再次确认「**打开**」。详细步骤见[安装指引](INSTALL.md#简体中文)。
+4. 进入引导后，点击「**开始**」了解权限，再点击「**试试**」体验可选的 5 秒演示。「**跳过**」位于右上角，左上角箭头用于返回上一步。
+5. 演示让已连接且受支持的屏幕变黑，再用 5 秒逐渐恢复原来的显示状态。按 **Escape** 可立即恢复；引导打开时暂停角落触发。
+6. 完成或跳过引导后进入设置，选择触发角落，再将鼠标移入试用。
+
+每次新安装、重新安装或更新后的首次启动都会显示引导，即使保留了旧版设置。完成或跳过一次后，同次安装的普通重启不再重复；原有角落、恢复方式、语言和启用偏好会保留。请从应用程序启动已安装的版本。
 
 顶部菜单栏仅显示小太阳图标，点开后可看到 SceneHush 名称；Dock 中不显示图标。引导入口保留在设置页，不在顶部菜单中列出。引导页左下角显示 App 版本。
 
 首次启动按 macOS 语言偏好顺序使用首个支持的语言（英语、中文或日语），无匹配时使用英语；手动选择的语言会保留。
 
-备选 DMG 内含 PKG 与安装指引；ZIP 用于手动安装 App。此版本**尚无 Developer ID 签名及 Apple 公证**，系统安装器不会消除 Gatekeeper 检查。如被拦截，请先确认信任本仓库和下载的 Release，再按[「仍要打开」步骤](INSTALL.md#简体中文)操作。校验和用于确认文件一致性，不能替代 Apple 公证。
+打开 DMG 只展示安装提示，不会执行 SceneHush 或更改 macOS 安全设置；ZIP 作为手动安装的备选。
+
+此版本**尚无 Developer ID 签名及 Apple 公证**。安装提示会提前说明 Gatekeeper 放行步骤，无法消除系统警告。请先确认信任本仓库和下载的 Release，再按[「仍要打开」步骤](INSTALL.md#简体中文)操作。校验和用于确认文件一致性，不能替代 Apple 公证。
 
 ## 需要哪些授权
 
 <img src="images/onboarding-permissions-zh-Hans.png" alt="SceneHush 引导中的显示、角落检测和登录启动权限说明" width="420">
 
-原生显示控制和角落检测**无需辅助功能、屏幕录制或管理员授权**；系统安装器在安装时可能要求管理员认证。SceneHush 不截取屏幕，也不控制其他 App。引导解释这些区别，不会索取未使用的权限。
+原生显示控制和角落检测**无需辅助功能、屏幕录制或管理员授权**。SceneHush 不截取屏幕，也不控制其他 App。引导解释这些区别，不会索取未使用的权限。
 
 **登录自动启动是可选项。** 开启后，macOS 可能要求在“登录项”中批准。替换有冲突的系统快捷角也由你在 App 内决定，原设置会保存供恢复。
 
@@ -101,7 +106,7 @@ make build
 make package
 ```
 
-App 生成在 `build/SceneHush.app`；PKG、DMG、ZIP 和 SHA-256 校验文件生成在 `dist/`。发布版包含 **arm64 和 x86_64**；在 Apple Silicon 上快速本地构建可用 `make build ARCH=arm64`。开发检查见 [CONTRIBUTING.md](../CONTRIBUTING.md)，实测与未覆盖环境见[验证记录](VALIDATION.md)。
+App 生成在 `build/SceneHush.app`；DMG、ZIP 和 SHA-256 校验文件生成在 `dist/`。发布版包含 **arm64 和 x86_64**；在 Apple Silicon 上快速本地构建可用 `make build ARCH=arm64`。开发检查见 [CONTRIBUTING.md](../CONTRIBUTING.md)，实测与未覆盖环境见[验证记录](VALIDATION.md)。
 
 ## 反馈与协议
 

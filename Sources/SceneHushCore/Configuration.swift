@@ -44,19 +44,22 @@ public struct Configuration: Codable, Equatable {
     public var enabled: Bool
     public var language: AppLanguage
     public var onboardingCompleted: Bool
+    public var completedOnboardingInstallationID: String?
 
     public init(selectedCorner: Corner = .rightBottom, restoreOnExit: Bool = true,
                 enabled: Bool = true, language: AppLanguage = .system,
-                onboardingCompleted: Bool = false) {
+                onboardingCompleted: Bool = false,
+                completedOnboardingInstallationID: String? = nil) {
         self.selectedCorner = selectedCorner
         self.restoreOnExit = restoreOnExit
         self.enabled = enabled
         self.language = language
         self.onboardingCompleted = onboardingCompleted
+        self.completedOnboardingInstallationID = completedOnboardingInstallationID
     }
 
     private enum CodingKeys: String, CodingKey {
-        case selectedCorner, restoreOnExit, enabled, language, onboardingCompleted
+        case selectedCorner, restoreOnExit, enabled, language, onboardingCompleted, completedOnboardingInstallationID
     }
 
     public init(from decoder: Decoder) throws {
@@ -66,6 +69,17 @@ public struct Configuration: Codable, Equatable {
         enabled = try values.decodeIfPresent(Bool.self, forKey: .enabled) ?? true
         language = try values.decodeIfPresent(AppLanguage.self, forKey: .language) ?? .system
         onboardingCompleted = try values.decodeIfPresent(Bool.self, forKey: .onboardingCompleted) ?? false
+        completedOnboardingInstallationID = try values.decodeIfPresent(String.self, forKey: .completedOnboardingInstallationID)
+    }
+
+    public func needsOnboarding(for installation: InstallationIdentity?) -> Bool {
+        guard onboardingCompleted, let installation else { return true }
+        return completedOnboardingInstallationID != installation.rawValue
+    }
+
+    public mutating func completeOnboarding(for installation: InstallationIdentity?) {
+        onboardingCompleted = true
+        if let installation { completedOnboardingInstallationID = installation.rawValue }
     }
 }
 

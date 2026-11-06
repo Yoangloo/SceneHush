@@ -5,14 +5,14 @@
 [English](README.md) · [简体中文](docs/README.zh-CN.md) · [日本語](docs/README.ja.md)
 
 <p>
-  <a href="https://github.com/Yoangloo/SceneHush/releases/download/v1.2.4/SceneHush-1.2.4-universal.pkg"><img src="assets/download-macos-en.svg" alt="Download for macOS" width="240" height="48"></a>
+  <a href="https://github.com/Yoangloo/SceneHush/releases/download/v1.2.5/SceneHush-1.2.5-universal.dmg"><img src="assets/download-macos-en.svg" alt="Download for macOS" width="240" height="48"></a>
 </p>
 
 <p>
-  <a href="https://github.com/Yoangloo/SceneHush/releases/download/v1.2.4/SceneHush-1.2.4-universal.zip">ZIP</a> · <a href="https://github.com/Yoangloo/SceneHush/releases/download/v1.2.4/SceneHush-1.2.4-universal.dmg">DMG</a> · <a href="https://github.com/Yoangloo/SceneHush/releases">All releases</a>
+  <a href="https://github.com/Yoangloo/SceneHush/releases/download/v1.2.5/SceneHush-1.2.5-universal.zip">ZIP</a> · <a href="https://github.com/Yoangloo/SceneHush/releases">All releases</a>
 </p>
 
-macOS 13+ · Apple Silicon & Intel · Open the PKG and follow the system Installer to install into **Applications**.
+macOS 13+ · Apple Silicon & Intel · Open the DMG and drag **SceneHush.app** to **Applications**.
 
 [Installation blocked? See the guide.](docs/INSTALL.md#english)
 
@@ -46,23 +46,28 @@ SceneHush does not keep the Mac awake, prevent automatic locking, or guarantee c
 
 ## Install and first run
 
-1. Download the PKG from [Releases](https://github.com/Yoangloo/SceneHush/releases/latest).
-2. Double-click the PKG and follow the system Installer to install SceneHush into **Applications**. The Installer may request administrator authentication. Open **SceneHush** from Applications after installation.
-3. If macOS blocks the installer or app, follow the [installation guide](docs/INSTALL.md#english). Otherwise choose **Get started** to read the permission explanation, then **Try it** when you are ready for the five-second demonstration. **Skip** is at the top right; the arrow at the top left returns to the previous step.
-4. During the demonstration, connected supported displays go dark and gradually return to their saved appearance over five seconds. Press **Escape** to restore immediately. Corner triggers are paused while the introduction is open.
-5. Finish the introduction to open settings. Choose a corner, then move the pointer there to try it.
+1. Download the DMG from [Releases](https://github.com/Yoangloo/SceneHush/releases/latest). Restore displays and quit an older SceneHush before updating.
+2. Open the DMG to see the installation guidance, then drag **SceneHush.app** to **Applications**.
+3. Open **SceneHush** from Applications. If Apple cannot verify the app, choose **Done**, then go to **System Settings → Privacy & Security → Open Anyway** and confirm **Open**. See the [installation guide](docs/INSTALL.md#english) for details.
+4. In the introduction, choose **Get started** to read the permission explanation, then **Try it** for the optional five-second demonstration. **Skip** is at the top right; the arrow at the top left returns to the previous step.
+5. During the demonstration, connected supported displays go dark and gradually return to their saved appearance over five seconds. Press **Escape** to restore immediately. Corner triggers are paused while the introduction is open.
+6. Complete or skip the introduction to open settings. Choose a corner, then move the pointer there to try it.
+
+The first launch after installing, reinstalling, or updating opens the introduction, even if an older version was already set up. Complete or skip it once; ordinary relaunches of the same installation do not repeat it. Your corner, restore behavior, language, and enabled-state preferences are retained. Launch from Applications so the installed copy is used.
 
 Only a small sun icon appears in the menu bar; open its menu to see the SceneHush name. There is no Dock icon. The introduction can be replayed from settings, and is not listed in the menu. Its bottom-left corner shows the app version.
 
 On first launch, SceneHush uses the first supported language in your macOS preferred-language list: English, Chinese, or Japanese. If none matches, it uses English. Your manual language choice is saved.
 
-The optional DMG includes the PKG and an installation guide; the ZIP contains the app for manual installation. This release has **no Developer ID signing or Apple notarization**. The system Installer does not remove Gatekeeper checks. If blocked, confirm that you trust the repository and release, then follow the [Open Anyway steps](docs/INSTALL.md#english). Checksums confirm file consistency; they do not replace notarization.
+Opening the DMG shows installation guidance; it does not launch SceneHush or change macOS security settings. The ZIP is an alternative for manual installation.
+
+This release has **no Developer ID signing or Apple notarization**. The installation guidance explains Gatekeeper approval in advance; it cannot remove the warning. Continue only if you trust the repository and release, then follow the [Open Anyway steps](docs/INSTALL.md#english). Checksums confirm file consistency; they do not replace notarization.
 
 ## Permissions
 
 <img src="docs/images/onboarding-permissions-en.png" alt="SceneHush introduction explaining display, corner, and login permissions" width="420">
 
-Native display control and corner detection need **no Accessibility, Screen Recording, or administrator permission**. Administrator authentication may be requested by the system Installer during installation. SceneHush does not capture your screen or control other apps. The introduction explains this; it does not ask for unused permissions.
+Native display control and corner detection need **no Accessibility, Screen Recording, or administrator permission**. SceneHush does not capture your screen or control other apps. The introduction explains this; it does not ask for unused permissions.
 
 **Launch at login is optional.** macOS may require approval in Login Items when you enable it. Any change to a conflicting macOS Hot Corner also requires your choice in the app; the original setting is saved for restoration.
 
@@ -101,7 +106,7 @@ make build
 make package
 ```
 
-The app is built at `build/SceneHush.app`. PKG, DMG, ZIP, and SHA-256 checksum files are written to `dist/`. Releases contain **arm64 and x86_64** slices; use `make build ARCH=arm64` for a faster local Apple Silicon build. See [CONTRIBUTING.md](CONTRIBUTING.md) for checks and [VALIDATION.md](docs/VALIDATION.md) for measured results and untested environments.
+The app is built at `build/SceneHush.app`. DMG, ZIP, and SHA-256 checksum files are written to `dist/`. Releases contain **arm64 and x86_64** slices; use `make build ARCH=arm64` for a faster local Apple Silicon build. See [CONTRIBUTING.md](CONTRIBUTING.md) for checks and [VALIDATION.md](docs/VALIDATION.md) for measured results and untested environments.
 
 ## Support and license
 

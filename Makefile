@@ -1,5 +1,5 @@
 ARCH ?= universal
-VERSION ?= 1.2.4
+VERSION ?= 1.2.5
 
 .PHONY: build test package icon clean
 

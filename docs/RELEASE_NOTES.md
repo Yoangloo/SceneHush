@@ -1,18 +1,18 @@
-# SceneHush 1.2.4
+# SceneHush 1.2.5
 
 ## English
 
 **Screens at rest. Local agents at work.** SceneHush darkens supported displays during a short break while leaving your apps and current desktop session in place.
 
-Each README now presents three separate rows: language navigation, the main PKG download button, then ZIP, DMG, and all-release links. English, Simplified Chinese, and Japanese use the same order.
+The main download is a drag-to-install DMG. Open it to see installation guidance, drag **SceneHush.app** to **Applications**, then open the installed app from Applications. The ZIP remains an alternative. README language links, the main download button, and ZIP/all-release links stay on separate rows.
 
-The new PKG opens the standard macOS Installer to install SceneHush into Applications. The optional DMG includes the PKG and an installation guide; the ZIP remains available for manual installation. [Installation help](https://github.com/Yoangloo/SceneHush/blob/v1.2.4/docs/INSTALL.md#english) explains Gatekeeper approval separately from installation authentication and the app's runtime permissions.
+The first launch after installing, reinstalling, or updating opens the introduction, even when older setup preferences exist. Complete or skip it to reach settings. Ordinary relaunches of the same installation do not repeat the completed introduction; your corner, restore behavior, language, and enabled-state preferences are retained.
 
-Display-restoration feedback now uses a simple green check and gray text, with no capsule background.
+Opening the DMG only shows guidance: it does not execute SceneHush, change security settings, or automatically remove quarantine. [Installation help](https://github.com/Yoangloo/SceneHush/blob/v1.2.5/docs/INSTALL.md#english) explains the approval flow before you launch the app.
 
-SceneHush continues to use native macOS display control, with no companion app. Your corner, restore behavior, language, and introduction preferences are retained. Restore displays and quit an older release before updating.
+SceneHush continues to use native macOS display control, with no companion app. Restore displays and quit an older release before updating.
 
-**Compatibility and installation:** macOS 13+, Apple Silicon or Intel, and compatible display gamma control are required. Open the universal PKG and follow the system Installer, which may request administrator authentication. Display control itself needs no administrator permission. This release has no Developer ID signing or Apple notarization; using a PKG does not remove Gatekeeper checks. If blocked, confirm the release source and your trust before using System Settings → Privacy & Security → Open Anyway, then confirm Open. The installer and installed app may each need this approval.
+**Compatibility and installation:** macOS 13+, Apple Silicon or Intel, and compatible display gamma control are required. This release has no Developer ID signing or Apple notarization, so installation guidance cannot remove Gatekeeper warnings. If Apple cannot verify the app, choose **Done**, confirm you trust the release source, then use **System Settings → Privacy & Security → Open Anyway** and confirm **Open**. Display control needs no administrator, Accessibility, or Screen Recording permission.
 
 The app darkens RGB output; it does not set the hardware brightness slider to zero or turn off the backlight. HDR, virtual displays, and some drivers may be unsupported.
 
@@ -22,15 +22,15 @@ The app darkens RGB output; it does not set the hardware brightness slider to ze
 
 **屏幕歇一会，本地 agent 继续工作。** SceneHush 为短暂离席调暗受支持屏幕，保留 App 与当前桌面会话。
 
-三语 README 下载区统一为三行：语言切换、PKG 主下载按钮、ZIP / DMG / 所有版本入口，顺序一致、各自独占一行。
+主下载改为拖动安装的 DMG。打开后先看安装提示，将 **SceneHush.app** 拖到**应用程序**，再从应用程序打开；ZIP 保留作为备选。三语 README 的语言、主下载按钮、ZIP / 所有版本入口仍各占一行。
 
-新增 PKG，通过 macOS 系统安装器安装至应用程序；备选 DMG 内含 PKG 与安装指引，ZIP 保留手动安装方式。[安装帮助](https://github.com/Yoangloo/SceneHush/blob/v1.2.4/docs/INSTALL.md#简体中文)区分 Gatekeeper 允许步骤、安装认证和 App 运行权限。
+每次新安装、重新安装或更新后的首次启动都会显示引导，即使已有旧版设置；完成或跳过后进入设置。同次安装的普通重启不再重复已完成的引导，原有角落、恢复方式、语言和启用偏好会保留。
 
-恢复显示后的反馈改为绿色勾号配灰色文字，去掉胶囊背景。
+打开 DMG 只展示提示，不会执行 SceneHush、更改安全设置或自动解除下载隔离。[安装帮助](https://github.com/Yoangloo/SceneHush/blob/v1.2.5/docs/INSTALL.md#简体中文)会在启动 App 前说明放行流程。
 
-SceneHush 仍使用 macOS 原生显示控制，无需配套 App。原有角落、恢复方式、语言和引导偏好会保留。升级前请先恢复显示并退出旧版。
+SceneHush 仍使用 macOS 原生显示控制，无需配套 App。升级前请先恢复显示并退出旧版。
 
-**兼容性与安装：** 需要 macOS 13+、Apple Silicon 或 Intel，以及兼容的显示伽马控制。打开通用版 PKG，按系统安装器提示操作，过程中可能要求管理员认证；显示控制本身无需管理员权限。此版本尚无 Developer ID 签名及 Apple 公证，PKG 不会消除 Gatekeeper 检查。如被拦截，请先核对并确认信任发布来源，再到系统设置 → 隐私与安全性 → 仍要打开，并再次确认打开；安装包和安装后的 App 可能各需允许一次。
+**兼容性与安装：** 需要 macOS 13+、Apple Silicon 或 Intel，以及兼容的显示伽马控制。此版本尚无 Developer ID 签名及 Apple 公证，安装提示无法消除 Gatekeeper 警告。如出现“Apple 无法验证”等提示，点击「**完成**」，核对并确认信任发布来源，再到**系统设置 → 隐私与安全性 → 仍要打开**，并再次确认「**打开**」。显示控制无需管理员、辅助功能或屏幕录制授权。
 
 调暗的是 RGB 显示输出，不会把硬件亮度滑块设为 0% 或关闭背光；HDR、虚拟屏及部分驱动可能不支持。
 
@@ -40,15 +40,15 @@ SceneHush 仍使用 macOS 原生显示控制，无需配套 App。原有角落�
 
 **画面はひと休み。ローカルエージェントは作業中。** SceneHush は短い離席時に対応画面を暗くし、アプリと現在のデスクトップセッションをそのまま保ちます。
 
-各 README のダウンロード欄を、言語の切り替え、PKG のメインダウンロードボタン、ZIP・DMG・すべてのリリースへのリンクの順に、それぞれ独立した行に配置しました。英語・簡体字中国語・日本語で共通の構成です。
+メインのダウンロードをドラッグで配置する DMG に戻しました。開くとインストール手順が表示されます。**SceneHush.app** を**アプリケーション**へドラッグし、アプリケーションから開いてください。ZIP も利用できます。各 README は、言語、メインダウンロードボタン、ZIP・すべてのリリースへのリンクを独立した行に配置しています。
 
-新しい PKG は macOS 標準のインストーラを使ってアプリケーションに配置します。DMG には PKG とインストールガイドを含み、手動で配置するための ZIP も残しています。[インストールガイド](https://github.com/Yoangloo/SceneHush/blob/v1.2.4/docs/INSTALL.md#日本語)では、Gatekeeper の許可操作とインストール時の認証、アプリの実行権限を区別して説明します。
+新規インストール・再インストール・更新後の初回起動では、以前の設定があってもガイドを開きます。完了またはスキップすると設定を開けます。同じインストールの通常の再起動では完了済みのガイドを繰り返さず、コーナー、復元方法、言語、有効・無効の設定を引き継ぎます。
 
-表示を復元した後のメッセージは、カプセル背景をなくし、緑のチェックとグレーの文字で表示します。
+DMG を開いても手順を表示するだけで、SceneHush を実行せず、セキュリティ設定やダウンロード隔離属性を自動で変更しません。[インストールガイド](https://github.com/Yoangloo/SceneHush/blob/v1.2.5/docs/INSTALL.md#日本語)で、アプリ起動前に許可操作を説明します。
 
-SceneHush は引き続き macOS 標準の表示制御を使い、追加アプリは不要です。コーナー、復元方法、言語、ガイドの設定は引き継ぎます。更新前に画面を復元して旧版を終了してください。
+SceneHush は引き続き macOS 標準の表示制御を使い、追加アプリは不要です。更新前に画面を復元して旧版を終了してください。
 
-**互換性とインストール：** macOS 13+、Apple Silicon または Intel、および対応するガンマ制御が必要です。Universal 版 PKG を開き、システムのインストーラに従います。管理者認証が必要になる場合がありますが、表示制御そのものには不要です。このリリースには Developer ID 署名と Apple の公証がなく、PKG でも Gatekeeper の確認は必要です。ブロックされた場合は配布元を信頼できることを確認し、システム設定 → プライバシーとセキュリティ → このまま開くを選び、続けて「開く」を確認してください。インストーラとインストール後のアプリで、それぞれ許可が必要になる場合があります。
+**互換性とインストール：** macOS 13+、Apple Silicon または Intel、および対応するガンマ制御が必要です。このリリースには Developer ID 署名と Apple の公証がないため、インストール手順で Gatekeeper の警告はなくせません。Apple が検証できない旨の警告が出たら「**完了**」で閉じ、配布元を信頼できることを確認します。**システム設定 → プライバシーとセキュリティ → このまま開く**を選び、続けて「**開く**」を確認してください。表示制御に管理者・アクセシビリティ・画面収録の権限は不要です。
 
 暗くするのは RGB 出力であり、ハードウェアの輝度をゼロにしたりバックライトを消したりしません。HDR、仮想画面、一部のドライバーは非対応の場合があります。
 

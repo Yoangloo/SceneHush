@@ -1,8 +1,7 @@
-# Native macOS installer
+# Drag-to-Applications distribution
 
-`scripts/package.sh` builds a standard macOS Installer product (`.pkg`), a DMG
-containing that same installer and a standalone installation guide, and a ZIP
-for manual app installation. All three downloads are covered by SHA-256 sums.
+`scripts/package.sh` produces a read-only DMG, a ZIP for manual app installation,
+and SHA-256 sums for both. It does not build an Installer package.
 
 ```sh
 scripts/package.sh --arch universal
@@ -10,56 +9,72 @@ python3 scripts/installer/verify-package.py --arch universal
 ```
 
 Packaging requires macOS, Xcode command line tools, and Python 3.9 or later.
-It uses only Apple's packaging tools and the Python standard library. The
-optional development dependencies for regenerating Finder metadata are
-documented in [dmg/README.md](dmg/README.md); ordinary packaging does not use
-or download them.
+There are no pip installs or network requests. The MIT-licensed DS_Store and alias/bookmark
+writers are included as unmodified source; their versions, provenance and
+upstream hashes are documented in [dmg/vendor/README.md](dmg/vendor/README.md).
+Apple frameworks render the background image and independently resolve the
+alias and bookmark data.
 
-## Installation behavior
+## What users see
 
-The component payload contains only `SceneHush.app` and installs into
-`/Applications`. Apple's standard Installer can request administrator
-authentication for that location. The payload has no install scripts,
-auto-launch action, login item, display setting changes or preference files.
-Existing SceneHush preferences are outside the payload and are preserved.
-Bundle relocation is disabled so another copy on a mounted DMG or in Downloads
-cannot become the installation destination. Version and bundle identity checks
-are enabled.
+Double-clicking the read-only DMG normally opens its volume in Finder, as
+documented by `hdiutil(1)` under `attach -[no]autoopen`. The fixed icon view
+shows `SceneHush.app`, an Applications shortcut, an arrow, and three short
+installation steps in English, Simplified Chinese and Japanese. Instructions
+to dismiss a verification warning and use **System Settings > Privacy &
+Security > Open Anyway** are visible in that same window before the app runs.
 
-Restore the displays and quit an older SceneHush before updating; the installer
-does not force quit a running app. Open the installed app manually afterwards.
+A separate `Installation Guide.html` provides the full three-language process,
+a user-initiated settings link and its manual fallback, and Apple's official
+help link. Its styles and icon are embedded, so the guide works offline. It
+chooses the browser's first supported preferred language and offers language
+buttons. Opening or mounting the DMG does not start SceneHush, install anything,
+or change display or security settings.
 
-The Installer introduction, read-me and conclusion are localized in English,
-Simplified Chinese and Japanese. The standalone HTML guide uses the browser's
-preferred supported language and also has manual language buttons. It embeds
-its icon and styling, so installation and Gatekeeper instructions can be read
-offline, before either the installer or app is allowed to open.
+Users drag the app into Applications, then open it from Applications. Restore
+the displays and quit an older SceneHush before replacing it. Existing app
+preferences remain outside the app bundle and are preserved. The installed app
+then shows its introduction for a new installation or update; users can finish
+or skip it to reach settings.
+
+## Finder background
+
+Packaging creates a temporary writable HFS+ image and mounts it with
+`-nobrowse -noautoopen`. The same alias/bookmark writers used by `dmgbuild` create references to the
+background inside that volume. The bookmark contains the volume UUID and a
+relative path, without a locator for the temporary backing image. The DS_Store writer records those references, window
+settings and icon positions. After unmounting, the image is converted to
+read-only compressed UDZO format. Finder or AppleScript is not used by the
+build, so no Automation permission is required.
+
+The native verification helper uses the legacy alias API only for Finder
+compatibility; the modern bookmark is checked too. Verification resolves both after the final image is
+mounted elsewhere, checks the 800 × 650 point background size, and rejects
+embedded build-machine user or temporary paths. This process does not depend
+on a static alias referring to a developer's checkout.
 
 ## Gatekeeper
 
-This packaging script produces an unsigned installer. The normal app build
-uses an ad-hoc signature unless `CODE_SIGN_IDENTITY` is supplied to the build
-script. Neither command submits software for Apple notarization. Do not label
-these packages as Developer ID signed or Apple notarized.
+The default app build uses an ad-hoc signature and is not submitted for Apple
+notarization. `CODE_SIGN_IDENTITY` can supply a signing identity to the app build,
+but neither build nor packaging commands perform notarization. Do not describe
+the default release as Developer ID signed or Apple notarized.
 
-An unsigned package can itself be blocked before its embedded introduction is
-visible. GitHub installation instructions and the DMG's separate HTML guide
-therefore explain the same manual **System Settings > Privacy & Security >
-Open Anyway** flow for both the installer and the app. The guide includes a
-user-initiated settings link, a readable manual path, and
-[Apple's official instructions](https://support.apple.com/en-us/102445).
-Nothing removes quarantine attributes or changes Gatekeeper policy.
+A DMG does not bypass Gatekeeper. GitHub, the visible Finder background and the
+standalone HTML guide explain the manual approval process for the installed
+app. Nothing removes quarantine attributes, changes Gatekeeper policy, runs an
+installation script, or automatically opens the app.
 
 ## Verification
 
-`verify-package.py` expands the package into a temporary directory, checks its
-native Installer metadata using read-only query modes, compares the payload
-with the signed build, checks all three Installer languages, and verifies the
-checksums. It also mounts the DMG read-only without opening Finder and verifies
-the two visible files and committed layout, then checks the ZIP app bytes,
-permissions and signature. It never performs an installation or opens the app.
+`verify-package.py` verifies both release checksums, mounts the DMG read-only
+without opening Finder, compares the app with the build byte for byte, verifies
+its code signature and Applications shortcut, and resolves its volume-specific
+background alias and bookmark. It checks the fixed icon layout, standalone
+three-language guide and absence of PKG files. The ZIP app, executable
+permissions and code signature are checked too. No app is installed or launched.
 
-The expected unsigned installer status is reported explicitly. Code signature
-verification of the app establishes integrity, not Apple notarization. Actual
-first-run Gatekeeper dialogs and authorization behavior must be checked on a
-downloaded release on a separate Mac; they are not simulated by this script.
+App signature integrity does not establish Apple notarization. Actual
+first-open Gatekeeper dialogs and drag/replace authorization must be checked
+on a downloaded release on a separate Mac. A local Finder screenshot verifies
+the presentation independently from the noninteractive build checks.

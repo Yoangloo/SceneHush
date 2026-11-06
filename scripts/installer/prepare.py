@@ -1,16 +1,13 @@
 #!/usr/bin/env python3
-"""Prepare static resources for Apple's script-free Installer and the DMG guide."""
+"""Build the offline, three-language drag-installation guide."""
 
 import argparse
 import base64
 import html
 import json
 from pathlib import Path
-import plistlib
-import xml.etree.ElementTree as ET
 
 
-PACKAGE_ID = "io.github.yoangloo.SceneHush.pkg"
 REPOSITORY = "https://github.com/Yoangloo/SceneHush"
 APPLE_HELP = "https://support.apple.com/en-us/102445"
 SECURITY_SETTINGS = "x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension"
@@ -28,36 +25,6 @@ def steps(items):
     return "<ol>" + "".join("<li>" + html.escape(item) + "</li>" for item in items) + "</ol>"
 
 
-def render_installer(copy, page, version):
-    if page == "welcome":
-        content = paragraph(copy["purpose"])
-        content += section(copy["installation_title"], copy["installation"])
-        content += section(copy["upgrade_title"], copy["upgrade"])
-    elif page == "readme":
-        content = section(copy["permissions_title"], copy["permissions"])
-        content += section(copy["safety_title"], copy["safety"])
-        content += section(copy["blocked_title"], copy["unsigned"])
-        content += steps(copy["blocked_steps"])
-        content += paragraph(copy["two_checks"])
-    else:
-        content = paragraph(copy["installed"])
-        content += steps(copy["launch_steps"])
-        content += section(copy["blocked_title"], copy["unsigned"])
-        content += steps(copy["blocked_steps"])
-        content += paragraph(copy["two_checks"])
-        content += paragraph(copy["safety"])
-    return """<!doctype html>
-<html lang="{language}"><head><meta charset="utf-8"><title>SceneHush</title>
-<style>body{{font-family:-apple-system,Helvetica,Arial,sans-serif;color:#20232b;
-font-size:13px;line-height:1.5;margin:22px}}h1{{font-size:24px;margin-bottom:4px}}
-h2{{font-size:14px;margin:22px 0 5px}}p{{margin:8px 0}}li{{margin:7px 0}}
-.version{{color:#737882;font-size:11px}}</style></head><body>
-<h1>{title}</h1><p class="version">SceneHush {version}</p>{content}
-</body></html>
-""".format(language=html.escape(copy["language"]), title=html.escape(copy[page + "_title"]),
-           version=html.escape(version), content=content)
-
-
 def render_guide(copies, version, icon):
     sections = []
     for language, copy in copies.items():
@@ -65,7 +32,7 @@ def render_guide(copies, version, icon):
 <p class="eyebrow">SceneHush {version}</p><h1>{title}</h1><p class="lead">{purpose}</p>
 <div class="card"><h2>{installation_title}</h2>{install_steps}<p class="muted">{installation}</p>
 <p class="note">{upgrade}</p></div>
-<div class="card"><h2>{blocked_title}</h2><p>{unsigned}</p>{blocked_steps}<p>{two_checks}</p>
+<div class="card"><h2>{blocked_title}</h2><p>{unsigned}</p>{blocked_steps}<p>{first_launch}</p>
 <p><a class="button" href="{settings}">{open_settings}</a></p><p class="muted">{manual_settings}</p>
 <p><a href="{apple_help}">{apple_link}</a></p></div>
 <div class="card"><h2>{permissions_title}</h2><p>{permissions}</p>
@@ -77,7 +44,7 @@ def render_guide(copies, version, icon):
             install_steps=steps(copy["install_steps"]), installation=html.escape(copy["installation"]),
             upgrade=html.escape(copy["upgrade"]), blocked_title=html.escape(copy["blocked_title"]),
             unsigned=html.escape(copy["unsigned"]), blocked_steps=steps(copy["blocked_steps"]),
-            two_checks=html.escape(copy["two_checks"]), settings=SECURITY_SETTINGS,
+            first_launch=html.escape(copy["first_launch"]), settings=SECURITY_SETTINGS,
             open_settings=html.escape(copy["open_settings"]), manual_settings=html.escape(copy["manual_settings"]),
             apple_help=APPLE_HELP, apple_link=html.escape(copy["apple_link"]),
             permissions_title=html.escape(copy["permissions_title"]), permissions=html.escape(copy["permissions"]),
@@ -111,61 +78,15 @@ document.querySelectorAll('[data-choice]').forEach(button => button.addEventList
 """.replace("__ICON__", icon).replace("__SECTIONS__", "\n".join(sections))
 
 
-def prepare_resources(args):
-    root = Path(args.project_root)
-    work = Path(args.work_dir)
-    work.mkdir(parents=True, exist_ok=True)
-    copies = json.loads((Path(__file__).with_name("copy.json")).read_text())
-    resources = work / "resources"
-    for language, copy in copies.items():
-        directory = resources / (language + ".lproj")
-        directory.mkdir(parents=True, exist_ok=True)
-        for page in ("welcome", "readme", "conclusion"):
-            (directory / (page + ".html")).write_text(render_installer(copy, page, args.version), encoding="utf-8")
-    icon = base64.b64encode((root / "assets/SceneHush.svg").read_bytes()).decode("ascii")
-    (work / "Installation Guide.html").write_text(render_guide(copies, args.version, icon), encoding="utf-8")
-    components = [{"RootRelativeBundlePath": "SceneHush.app", "BundleIsRelocatable": False,
-                   "BundleIsVersionChecked": True, "BundleHasStrictIdentifier": True,
-                   "BundleOverwriteAction": "upgrade"}]
-    with (work / "components.plist").open("wb") as file:
-        plistlib.dump(components, file)
-    architectures = ["arm64", "x86_64"] if args.arch == "universal" else [args.arch]
-    with (work / "requirements.plist").open("wb") as file:
-        plistlib.dump({"os": ["13.0"], "arch": architectures}, file)
-
-
-def configure_distribution(args):
-    path = Path(args.path)
-    tree = ET.parse(path)
-    root = tree.getroot()
-    for index, (tag, attributes, value) in enumerate([
-        ("title", {}, "SceneHush"),
-        ("welcome", {"file": "welcome.html", "mime-type": "text/html"}, None),
-        ("readme", {"file": "readme.html", "mime-type": "text/html"}, None),
-        ("conclusion", {"file": "conclusion.html", "mime-type": "text/html"}, None),
-        ("domains", {"enable_localSystem": "true", "enable_currentUserHome": "false", "enable_anywhere": "false"}, None),
-    ]):
-        element = ET.Element(tag, attributes)
-        element.text = value
-        root.insert(index, element)
-    ET.indent(tree, space="    ")
-    tree.write(path, encoding="utf-8", xml_declaration=True)
-
-
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    commands = parser.add_subparsers(dest="command", required=True)
-    resources = commands.add_parser("resources")
-    resources.add_argument("--project-root", required=True)
-    resources.add_argument("--work-dir", required=True)
-    resources.add_argument("--version", required=True)
-    resources.add_argument("--arch", choices=("universal", "arm64", "x86_64"), required=True)
-    resources.set_defaults(run=prepare_resources)
-    distribution = commands.add_parser("distribution")
-    distribution.add_argument("path")
-    distribution.set_defaults(run=configure_distribution)
+    parser.add_argument("--project-root", type=Path, required=True)
+    parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--version", required=True)
     args = parser.parse_args()
-    args.run(args)
+    copies = json.loads(Path(__file__).with_name("copy.json").read_text(encoding="utf-8"))
+    icon = base64.b64encode((args.project_root / "assets/SceneHush.svg").read_bytes()).decode("ascii")
+    args.output.write_text(render_guide(copies, args.version, icon), encoding="utf-8")
 
 
 if __name__ == "__main__":

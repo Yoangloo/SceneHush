@@ -1,5 +1,19 @@
 # Validation record
 
+## 1.2.5 — drag installation and installation-specific introduction
+
+Checked on 2026-11-06 on the same Apple Silicon Mac:
+
+- All 41 core tests passed. Nine installation-identity tests cover legacy preferences, completion and relaunch, a same-version new copy, replacement at the same path, an in-place executable overwrite with preserved modification time, same-volume renaming, version/build changes, unreadable metadata, and an incomplete matching marker. Identity uses a persistent volume UUID rather than a device number; an actual operating-system reboot was not performed.
+- An isolated GUI harness compiled the current app delegate, introduction/settings views, configuration, installation identity, and localized resources. Twenty startup checks and ten source-binding checks passed. Legacy completion cannot bypass the introduction through `--settings`; closing it keeps corner actions suspended; completion preserves preferences; the same installation retains completion; a replacement or unreadable identity requires introduction again. Display, demonstration, recovery, and hot-corner integrations were replaced with fail-fast stubs: no dimming or system-setting changes occurred, and the real user profile was not used.
+- The active, key-window Chinese welcome capture shows the existing introduction UI without truncation. It precedes the final volume-UUID-only identity correction; routing checks were rerun against the final identity source. It is not a capture of a complete downloaded-app installation.
+- Universal arm64/x86_64 packaging passed with a macOS 13 deployment target, strict ad-hoc signature verification, and 64 matching nonempty strings in each of English, Simplified Chinese, and Japanese. `python3 scripts/installer/verify-package.py --arch universal` passed on the final 1.2.5 downloads.
+- The DMG contains SceneHush.app, an Applications shortcut, and an offline three-language installation guide. Its background gives drag-install and Gatekeeper instructions before the app is opened. Verification checked read-only mounting, app bytes/signature, the exact shortcut destination, image dimensions, background references after conversion and remounting at a different path, ZIP permissions, and both download checksums. No PKG is produced.
+- Finder layout was checked in an actual Finder window: the three-language instructions, drag arrow, application icons, and help entry were fully visible. Layout generation uses vendored, unmodified MIT-licensed build helpers with recorded upstream hashes; normal packaging requires no package download. The helper code is not bundled in the app.
+- All three README headers now lead with a DMG download, followed by ZIP and release-list links on a separate row. Installation documentation explains the security warning before the first app launch and the introduction shown for a new installation, while retaining existing preferences.
+
+The app remains ad-hoc signed and is not Apple notarized. These checks do not establish the Gatekeeper experience of a quarantined browser download, a real Finder drag-copy, installation on a fresh Mac, Intel runtime, or older macOS Finder appearance. No new display-control or agent-compatibility test was performed. SceneHush does not prevent sleep or automatic locking. Public CI and release-download checks are verified separately.
+
 ## 1.2.4 — native installer and completion status
 
 Checked on 2026-11-06 on the same Apple Silicon Mac:

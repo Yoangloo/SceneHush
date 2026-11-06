@@ -21,6 +21,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, OnboardingActions {
     var settings: SettingsWindowController?
     var onboarding: OnboardingWindowController?
     var onboardingPresented = false
+    let installationIdentity: InstallationIdentity?
+    var onboardingRequired = true
     var timer: Timer?
     var phase: Phase = .idle
     var previousInside: Bool?
@@ -29,11 +31,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate, OnboardingActions {
     var quitting = false
     var cornerConflict = false
 
-    init(paths: RuntimePaths = RuntimePaths()) { self.paths = paths; super.init() }
+    init(paths: RuntimePaths = RuntimePaths(), installationIdentity: InstallationIdentity? = try? InstallationIdentity.current()) {
+        self.paths = paths
+        self.installationIdentity = installationIdentity
+        super.init()
+    }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         do { try paths.ensureDirectory(); configuration = try store.load() }
         catch { lastIssue = localizer("error.config"); log(error.localizedDescription); configuration.enabled = false }
+        onboardingRequired = configuration.needsOnboarding(for: installationIdentity)
         item = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
         item.button?.title = ""
         item.button?.imagePosition = .imageOnly
@@ -51,9 +58,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, OnboardingActions {
         timer = Timer(timeInterval: 0.1, repeats: true) { [weak self] _ in self?.tick() }
         timer?.tolerance = 0.025
         RunLoop.main.add(timer!, forMode: .common)
-        if !configuration.onboardingCompleted || CommandLine.arguments.contains("--onboarding") { showOnboarding() }
+        if onboardingRequired || CommandLine.arguments.contains("--onboarding") { showOnboarding() }
         else if CommandLine.arguments.contains("--settings") { showSettings() }
-        if cornerConflict && configuration.onboardingCompleted && !onboardingPresented {
+        if cornerConflict && !onboardingRequired && !onboardingPresented {
             DispatchQueue.main.async { self.resolveInitialConflict() }
         }
         log("Started SceneHush")
@@ -117,7 +124,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, OnboardingActions {
     func tick() {
         let inside = NSScreen.screens.contains { configuration.selectedCorner.contains(point: NSEvent.mouseLocation, in: $0.frame) }
         defer { previousInside = inside }
-        guard configuration.enabled, configuration.onboardingCompleted,
+        guard configuration.enabled, !onboardingRequired,
               !onboardingPresented, !quitting, !cornerConflict else { return }
         guard let previous = previousInside else { return }
         if configuration.restoreOnExit {
@@ -208,7 +215,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, OnboardingActions {
         restoreNow()
     }
     @objc func showSettings() {
-        guard configuration.onboardingCompleted else { showOnboarding(); return }
+        guard !onboardingRequired else { showOnboarding(); return }
         if settings == nil { settings = SettingsWindowController(actions: self) }
         settings?.rebuild(); settings?.show()
     }
@@ -244,7 +251,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, OnboardingActions {
     }
     func finishOnboarding() {
         guard phase != .demonstrating else { return }
-        configuration.onboardingCompleted = true
+        configuration.completeOnboarding(for: installationIdentity)
+        onboardingRequired = false
         onboardingPresented = false; previousInside = nil
         onboarding?.finish(); onboarding = nil
         persist(); showSettings()

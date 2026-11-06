@@ -7,10 +7,11 @@ trap 'rm -rf "$test_dir"' EXIT
 app_dir="$test_dir/WindowLayoutCheck.app"
 mkdir -p "$app_dir/Contents/MacOS" "$app_dir/Contents/Frameworks" "$app_dir/Contents/Resources"
 
-# Only configuration types are linked. The display engine and app delegate are excluded.
+# Only configuration and installation identity are linked; no display engine or app delegate.
 { printf 'import CoreGraphics\n'; cat "$project_dir/Sources/SceneHushCore/Configuration.swift"; } > "$test_dir/Configuration.swift"
 xcrun swiftc -emit-library -emit-module -module-name SceneHushCore \
   "$test_dir/Configuration.swift" \
+  "$project_dir/Sources/SceneHushCore/InstallationIdentity.swift" \
   -emit-module-path "$test_dir/SceneHushCore.swiftmodule" \
   -Xlinker -install_name -Xlinker '@rpath/libSceneHushCore.dylib' \
   -o "$app_dir/Contents/Frameworks/libSceneHushCore.dylib"

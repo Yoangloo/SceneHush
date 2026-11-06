@@ -2,6 +2,15 @@
 
 Changes are grouped by release. Dates use the release's calendar date.
 
+## 1.2.5 — 2026-11-06
+
+### Changed
+
+- Make a drag-to-install DMG the main download again, with SceneHush.app, an Applications shortcut, and installation guidance visible when opened; retain ZIP as the alternative.
+- Explain Gatekeeper approval after copying the app into Applications, without running SceneHush or changing security settings when the DMG opens.
+- Show the introduction on the first launch after installing, reinstalling, or updating, including when older preferences exist; preserve the user's settings and avoid repeating the introduction on ordinary relaunches after completion or Skip.
+- Update English, Simplified Chinese, and Japanese download and installation guidance for the new flow.
+
 ## 1.2.4 — 2026-11-06
 
 ### Changed

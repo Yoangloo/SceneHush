@@ -2,7 +2,7 @@
 set -euo pipefail
 
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-APP_VERSION="1.2.4"
+APP_VERSION="1.2.5"
 ARCHITECTURE="universal"
 SKIP_BUILD=false
 
@@ -12,7 +12,7 @@ while [[ $# -gt 0 ]]; do
     --version) APP_VERSION="${2:?Missing version}"; shift 2 ;;
     --skip-build) SKIP_BUILD=true; shift ;;
     -h|--help)
-      printf 'Usage: scripts/package.sh [--arch universal|arm64|x86_64] [--version 1.2.4] [--skip-build]\n'
+      printf 'Usage: scripts/package.sh [--arch universal|arm64|x86_64] [--version 1.2.5] [--skip-build]\n'
       exit 0 ;;
     *) printf 'Unknown argument: %s\n' "$1" >&2; exit 2 ;;
   esac
@@ -51,40 +51,43 @@ DIST_PATH="$PROJECT_ROOT/dist"
 mkdir -p "$DIST_PATH"
 PACKAGE_NAME="SceneHush-$APP_VERSION-$ARCHITECTURE"
 STAGING="$(mktemp -d "${TMPDIR:-/tmp}/SceneHush-package.XXXXXX")"
-trap 'rm -rf "$STAGING"' EXIT
-INSTALLER_WORK="$STAGING/installer"
+DMG_MOUNT=""
+cleanup() {
+  if [[ -n "$DMG_MOUNT" ]] && ! hdiutil detach "$DMG_MOUNT" >/dev/null; then
+    printf 'Could not detach the temporary volume. Keeping its backing image in %s.\n' "$STAGING" >&2
+    return
+  fi
+  rm -rf "$STAGING"
+}
+trap cleanup EXIT
 DMG_STAGING="$STAGING/disk-image"
-mkdir -p "$INSTALLER_WORK/payload" "$INSTALLER_WORK/packages" "$DMG_STAGING"
-python3 "$PROJECT_ROOT/scripts/installer/prepare.py" resources \
-  --project-root "$PROJECT_ROOT" --work-dir "$INSTALLER_WORK" \
-  --version "$APP_VERSION" --arch "$ARCHITECTURE"
-ditto "$APP_PATH" "$INSTALLER_WORK/payload/SceneHush.app"
-
-# A static app payload: no privileged install scripts, automatic launch or settings changes.
-pkgbuild --root "$INSTALLER_WORK/payload" \
-  --component-plist "$INSTALLER_WORK/components.plist" \
-  --identifier io.github.yoangloo.SceneHush.pkg --version "$APP_VERSION" \
-  --install-location /Applications "$INSTALLER_WORK/packages/SceneHush-component.pkg"
-productbuild --synthesize --product "$INSTALLER_WORK/requirements.plist" \
-  --package "$INSTALLER_WORK/packages/SceneHush-component.pkg" "$INSTALLER_WORK/Distribution.xml"
-python3 "$PROJECT_ROOT/scripts/installer/prepare.py" distribution "$INSTALLER_WORK/Distribution.xml"
-productbuild --distribution "$INSTALLER_WORK/Distribution.xml" \
-  --resources "$INSTALLER_WORK/resources" --package-path "$INSTALLER_WORK/packages" \
-  "$DIST_PATH/$PACKAGE_NAME.pkg"
-
-cp "$DIST_PATH/$PACKAGE_NAME.pkg" "$DMG_STAGING/Install SceneHush.pkg"
-cp "$INSTALLER_WORK/Installation Guide.html" "$DMG_STAGING/Installation Guide.html"
+mkdir -p "$DMG_STAGING/.background"
+python3 "$PROJECT_ROOT/scripts/installer/prepare.py" \
+  --project-root "$PROJECT_ROOT" --output "$DMG_STAGING/Installation Guide.html" --version "$APP_VERSION"
+ditto "$APP_PATH" "$DMG_STAGING/SceneHush.app"
+ln -s /Applications "$DMG_STAGING/Applications"
 cp "$PROJECT_ROOT/LICENSE" "$DMG_STAGING/.LICENSE.txt"
-cp "$PROJECT_ROOT/scripts/installer/dmg/Finder-layout.dsstore" "$DMG_STAGING/.DS_Store"
+xcrun clang -fobjc-arc -Wno-deprecated-declarations -framework AppKit -framework CoreServices \
+  "$PROJECT_ROOT/scripts/installer/dmg/VolumeAssets.m" -o "$STAGING/VolumeAssets"
+"$STAGING/VolumeAssets" render "$DMG_STAGING/.background/background.png"
+
+# Resolve the Finder background against its own volume, never the build checkout.
+hdiutil create -volname "SceneHush $APP_VERSION" -srcfolder "$DMG_STAGING" \
+  -fs HFS+ -ov -format UDRW "$STAGING/writable.dmg"
+hdiutil attach -readwrite -nobrowse -noautoopen -plist "$STAGING/writable.dmg" > "$STAGING/attach.plist"
+DMG_MOUNT="$(python3 -c 'import plistlib,sys; p=plistlib.load(open(sys.argv[1],"rb")); print(next(e["mount-point"] for e in p["system-entities"] if "mount-point" in e))' "$STAGING/attach.plist")"
+python3 "$PROJECT_ROOT/scripts/installer/dmg/generate_layout.py" "$DMG_MOUNT" "$STAGING/background-metadata.plist"
+"$STAGING/VolumeAssets" verify "$DMG_MOUNT" "$STAGING/background-metadata.plist"
+hdiutil detach "$DMG_MOUNT"
+DMG_MOUNT=""
 
 ditto -c -k --sequesterRsrc --keepParent "$APP_PATH" "$DIST_PATH/$PACKAGE_NAME.zip"
-hdiutil create -volname "SceneHush $APP_VERSION" -srcfolder "$DMG_STAGING" \
-  -ov -format UDZO "$DIST_PATH/$PACKAGE_NAME.dmg"
+hdiutil convert "$STAGING/writable.dmg" -format UDZO -ov -o "$DIST_PATH/$PACKAGE_NAME.dmg"
 (
   cd "$DIST_PATH"
-  shasum -a 256 "$PACKAGE_NAME.pkg" "$PACKAGE_NAME.dmg" "$PACKAGE_NAME.zip" > "$PACKAGE_NAME-SHA256SUMS.txt"
+  shasum -a 256 "$PACKAGE_NAME.dmg" "$PACKAGE_NAME.zip" > "$PACKAGE_NAME-SHA256SUMS.txt"
 )
 printf '\nRelease assets:\n'
-printf '  %s\n' "$DIST_PATH/$PACKAGE_NAME.pkg" "$DIST_PATH/$PACKAGE_NAME.dmg" "$DIST_PATH/$PACKAGE_NAME.zip" \
+printf '  %s\n' "$DIST_PATH/$PACKAGE_NAME.dmg" "$DIST_PATH/$PACKAGE_NAME.zip" \
   "$DIST_PATH/$PACKAGE_NAME-SHA256SUMS.txt"
 
