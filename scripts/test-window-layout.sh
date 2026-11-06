@@ -23,7 +23,7 @@ xcrun swiftc -parse-as-library -I "$test_dir" -L "$app_dir/Contents/Frameworks" 
   "$project_dir/Tests/WindowLayout/WindowLayoutMain.swift" \
   -o "$app_dir/Contents/MacOS/WindowLayoutCheck"
 cp "$project_dir/Sources/SceneHush/Resources/"*.json "$app_dir/Contents/Resources/"
-cp "$project_dir/assets/SceneHush.icns" "$app_dir/Contents/Resources/"
+cp "$project_dir/assets/SceneHush.icns" "$app_dir/Contents/Resources/SceneHush-DayNight.icns"
 cat > "$app_dir/Contents/Info.plist" <<'PLIST'
 <?xml version="1.0" encoding="UTF-8"?>
 <plist version="1.0"><dict>

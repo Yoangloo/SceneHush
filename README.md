@@ -1,18 +1,25 @@
-<img src="assets/SceneHush.png" alt="SceneHush day and night switch icon" width="96" height="96">
+<img src="assets/SceneHush.png?v=daynight-1.2.3" alt="SceneHush day and night switch icon" width="96" height="96">
 
 # SceneHush
 
+<p>
+  <a href="https://github.com/Yoangloo/SceneHush/releases/download/v1.2.3/SceneHush-1.2.3-universal.dmg"><img src="assets/download-macos-en.svg" alt="Download for macOS" width="240" height="48"></a>
+  &nbsp; <a href="https://github.com/Yoangloo/SceneHush/releases/download/v1.2.3/SceneHush-1.2.3-universal.zip">ZIP</a> · <a href="https://github.com/Yoangloo/SceneHush/releases">All releases</a>
+</p>
+
+macOS 13+ · Apple Silicon & Intel · Open the DMG and drag **SceneHush.app** to **Applications**.
+
 [English](README.md) · [简体中文](docs/README.zh-CN.md) · [日本語](docs/README.ja.md)
 
-**Screens at rest. Work in motion.**
+**Screens at rest. Local agents at work.**
 
-SceneHush is a small, standalone macOS menu bar app. Move the pointer into your chosen screen corner to darken connected, supported displays; move away to restore their previous appearance. **Version 1.2 uses native macOS display control only. No companion app is required.**
+SceneHush is a macOS menu bar app for short breaks while **local agents work**. Move the pointer into a chosen corner to darken supported displays while leaving your apps and desktop session in place; move away to restore the screens. **Native macOS control. No companion app required.**
 
 <img src="docs/images/settings-en.png" alt="SceneHush settings in English" width="600">
 
 ## Why it exists
 
-The first request was simple: on a MacBook with an external monitor, make one corner darken both screens. SceneHush grew from that action into a quiet utility for short breaks while a computer agent has work in progress. Choose a corner, step away briefly, and return to the same desktop session.
+Your local coding agent is building, a browser agent is working through a task, or an automation is still running. You need a short break without closing their apps or leaving the current desktop session. SceneHush gives your supported screens a rest, then brings you back to that same session.
 
 SceneHush changes display output without putting a black window over the desktop. It does not send pause commands to your agents, close their apps, or log you out. Some desktop workflows depend on an unlocked session or foreground interaction; other agents continue independently. Capture behavior and agent compatibility still need to be checked in your own environment.
 
@@ -21,6 +28,7 @@ SceneHush does not keep the Mac awake, prevent automatic locking, or guarantee c
 ## Features
 
 - Choose any of the four corners; the selected corner works on every connected screen.
+- Leave local agent apps and the current desktop session in place; SceneHush changes display output without pausing applications.
 - Darken supported built-in and external display output together, using native CoreGraphics controls.
 - Restore when the pointer leaves, or keep displays dark until the next corner entry.
 - Get started with a permission explanation and an optional five-second dark-to-light demonstration.
@@ -35,11 +43,13 @@ SceneHush does not keep the Mac awake, prevent automatic locking, or guarantee c
 
 1. Download the DMG or ZIP from [Releases](https://github.com/Yoangloo/SceneHush/releases/latest).
 2. Drag **SceneHush.app** into **Applications**, then open it. For a ZIP, extract the app first.
-3. Choose **Get started** to read the permission explanation, then **Try it** when you are ready for the five-second demonstration. **Skip** is at the top left.
+3. Choose **Get started** to read the permission explanation, then **Try it** when you are ready for the five-second demonstration. **Skip** is at the top right; the arrow at the top left returns to the previous step.
 4. During the demonstration, connected supported displays go dark and gradually return to their saved appearance over five seconds. Press **Escape** to restore immediately. Corner triggers are paused while the introduction is open.
 5. Finish the introduction to open settings. Choose a corner, then move the pointer there to try it.
 
 Only a small sun icon appears in the menu bar; open its menu to see the SceneHush name. There is no Dock icon. The introduction can be replayed from settings, and is not listed in the menu. Its bottom-left corner shows the app version.
+
+On first launch, SceneHush uses the first supported language in your macOS preferred-language list: English, Chinese, or Japanese. If none matches, it uses English. Your manual language choice is saved.
 
 This release is **ad-hoc signed, without Developer ID signing or Apple notarization**. If macOS blocks it, confirm that you trust the repository and release, then use **System Settings → Privacy & Security → Open Anyway**. Building from source is another option. Checksums confirm file consistency; they do not replace notarization.
 

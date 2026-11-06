@@ -2,13 +2,13 @@
 set -euo pipefail
 
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-APP_VERSION="1.2.2"
+APP_VERSION="1.2.3"
 ARCHITECTURE="universal"
 CONFIGURATION="release"
 
 usage() {
   cat <<'USAGE'
-Usage: scripts/build.sh [--arch universal|arm64|x86_64] [--version 1.2.2]
+Usage: scripts/build.sh [--arch universal|arm64|x86_64] [--version 1.2.3]
                         [--configuration release|debug]
 
 Builds build/SceneHush.app with the installed Xcode command line tools.
@@ -81,7 +81,7 @@ else
   cp "${BINARIES[0]}" "$APP_STAGING/Contents/MacOS/SceneHush"
 fi
 chmod 755 "$APP_STAGING/Contents/MacOS/SceneHush"
-cp "$PROJECT_ROOT/assets/SceneHush.icns" "$APP_STAGING/Contents/Resources/SceneHush.icns"
+cp "$PROJECT_ROOT/assets/SceneHush.icns" "$APP_STAGING/Contents/Resources/SceneHush-DayNight.icns"
 cp "$PROJECT_ROOT/LICENSE" "$APP_STAGING/Contents/Resources/LICENSE"
 
 # SwiftPM's development bundle lookup is not the installed app's resource path.
@@ -104,7 +104,7 @@ cat > "$APP_STAGING/Contents/Info.plist" <<PLIST
   <key>CFBundleInfoDictionaryVersion</key><string>6.0</string>
   <key>CFBundleVersion</key><string>$APP_VERSION</string>
   <key>CFBundleShortVersionString</key><string>$APP_VERSION</string>
-  <key>CFBundleIconFile</key><string>SceneHush</string>
+  <key>CFBundleIconFile</key><string>SceneHush-DayNight</string>
   <key>CFBundleDevelopmentRegion</key><string>en</string>
   <key>CFBundleLocalizations</key><array><string>en</string><string>zh-Hans</string><string>ja</string></array>
   <key>LSMinimumSystemVersion</key><string>13.0</string>

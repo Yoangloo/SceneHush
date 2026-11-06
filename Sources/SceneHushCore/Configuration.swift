@@ -17,6 +17,25 @@ public enum Corner: String, Codable, CaseIterable {
 
 public enum AppLanguage: String, Codable, CaseIterable {
     case system, en, zhHans, ja
+
+    public func resourceCode(preferredLanguages: [String] = Locale.preferredLanguages) -> String {
+        switch self {
+        case .en: return "en"
+        case .zhHans: return "zh-Hans"
+        case .ja: return "ja"
+        case .system:
+            for preference in preferredLanguages {
+                let base = preference.replacingOccurrences(of: "_", with: "-").lowercased().split(separator: "-").first
+                switch base {
+                case "en": return "en"
+                case "zh": return "zh-Hans"
+                case "ja": return "ja"
+                default: continue
+                }
+            }
+            return "en"
+        }
+    }
 }
 
 public struct Configuration: Codable, Equatable {

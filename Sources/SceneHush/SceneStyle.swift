@@ -3,7 +3,7 @@ import SwiftUI
 
 enum SceneAppInfo {
     static var version: String {
-        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "1.2.2"
+        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "1.2.3"
     }
 }
 
@@ -54,7 +54,7 @@ struct BrandHeader: View {
         .frame(maxWidth: .infinity)
     }
     private var icon: NSImage {
-        if let url = Bundle.main.url(forResource: "SceneHush", withExtension: "icns"),
+        if let url = Bundle.main.url(forResource: "SceneHush-DayNight", withExtension: "icns"),
            let image = NSImage(contentsOf: url) { return image }
         return NSImage(named: NSImage.applicationIconName) ?? NSImage()
     }

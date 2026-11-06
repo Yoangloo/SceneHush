@@ -12,14 +12,7 @@ struct Localizer {
     }
 
     init(_ language: AppLanguage) {
-        switch language {
-        case .en: code = "en"
-        case .zhHans: code = "zh-Hans"
-        case .ja: code = "ja"
-        case .system:
-            let preferred = Locale.preferredLanguages.first ?? "en"
-            code = preferred.hasPrefix("zh") ? "zh-Hans" : preferred.hasPrefix("ja") ? "ja" : "en"
-        }
+        code = language.resourceCode()
         strings = Self.load(code)
     }
 

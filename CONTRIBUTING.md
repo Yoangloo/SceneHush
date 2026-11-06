@@ -49,6 +49,7 @@ For window layout changes, run `./scripts/test-window-layout.sh /tmp/scenehush-w
 - Check package contents and SHA-256 checksums.
 - State the actual signing and notarization status; ad-hoc is not Developer ID or notarization.
 - Publish tag, three-language release notes, DMG, ZIP, and checksums together, then verify public downloads.
+- Update the three README download buttons and ZIP links to that release, and verify their rendered images and public targets.
 - Record observed results and remaining gaps in [VALIDATION.md](docs/VALIDATION.md).
 
 ## License

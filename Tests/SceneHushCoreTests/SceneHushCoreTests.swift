@@ -42,6 +42,41 @@ import Testing
         #expect(!old.onboardingCompleted)
     }
 
+    @Test func firstLaunchWithoutConfigurationFollowsSystemLanguage() throws {
+        #expect(Configuration().language == .system)
+        #expect(!FileManager.default.fileExists(atPath: paths.configURL.path))
+        let configuration = try ConfigurationStore(paths: paths).load()
+        #expect(configuration.language == .system)
+        #expect(configuration.language.resourceCode(preferredLanguages: ["ja-JP", "en-US"]) == "ja")
+        #expect(!FileManager.default.fileExists(atPath: paths.configURL.path))
+    }
+
+    @Test(arguments: [
+        (["zh-CN"], "zh-Hans"), (["zh-Hans-CN"], "zh-Hans"),
+        (["zh-Hant-TW"], "zh-Hans"), (["ZH_hans_CN"], "zh-Hans"),
+        (["ja-JP"], "ja"), (["JA_jp"], "ja"),
+        (["en-US"], "en"), (["EN_gb"], "en"),
+        (["fr-FR", "ja-JP", "en-US"], "ja"),
+        (["de-DE", "zh-CN", "ja-JP"], "zh-Hans"),
+        (["en-AU", "zh-CN"], "en"), (["ja-JP", "zh-CN"], "ja"),
+        (["fr-FR", "de-DE"], "en"), (["", "fr-FR"], "en"),
+        ([String](), "en")
+    ])
+    func systemLanguageUsesFirstSupportedPreference(_ preferences: [String], _ expected: String) {
+        #expect(AppLanguage.system.resourceCode(preferredLanguages: preferences) == expected)
+    }
+
+    @Test(arguments: [(AppLanguage.en, "en"), (.zhHans, "zh-Hans"), (.ja, "ja")])
+    func savedLanguageOverridesSystemPreferences(_ language: AppLanguage, _ expected: String) throws {
+        let store = ConfigurationStore(paths: RuntimePaths(supportDirectory: directory.appendingPathComponent(language.rawValue)))
+        try store.save(Configuration(language: language))
+        let restored = try store.load()
+        #expect(restored.language == language)
+        for preferences in [["fr-FR", "ja-JP", "zh-CN"], ["en-US"], []] {
+            #expect(restored.language.resourceCode(preferredLanguages: preferences) == expected)
+        }
+    }
+
     @Test func removedDisplayMethodIsIgnoredWhenMigratingExistingConfiguration() throws {
         let legacy = Data("""
             {"selectedCorner":"rightTop","restoreOnExit":false,"enabled":false,

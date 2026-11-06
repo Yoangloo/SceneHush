@@ -2,6 +2,17 @@
 
 Changes are grouped by release. Dates use the release's calendar date.
 
+## 1.2.3 — 2026-11-06
+
+### Changed
+
+- Move introduction Skip to the top right and use an arrow-only Back control at the top left, with localized accessibility labels and help.
+- Update English, Simplified Chinese, and Japanese guidance for the navigation layout.
+- Add a prominent macOS download button, ZIP link, and release list to the first screen of each README, using local SVG artwork.
+- Follow the first supported language in the macOS preferred-language list on first launch, fall back to English if needed, and preserve manual language choices.
+- Refresh the existing day/night switch icon through a new bundle resource filename and versioned README image references.
+- Make short breaks while local agents work the shared focus of the app introduction and three README languages, while retaining the unlocked-session and sleep limitations.
+
 ## 1.2.2 — 2026-11-06
 
 ### Changed

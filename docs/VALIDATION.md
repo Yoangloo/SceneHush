@@ -1,5 +1,18 @@
 # Validation record
 
+## 1.2.3 — first-run language, branding, and download access
+
+Checked on 2026-11-06 on the same Apple Silicon Mac with two connected displays:
+
+- All 32 core tests passed, including first launch without a configuration, 15 system-language preference cases, and three persisted manual-language cases.
+- A separate app harness compiled the actual configuration and localizer sources with the three resource bundles. Ten independent processes used process-only `-AppleLanguages` preferences to check English, Chinese, Japanese, unsupported first choices followed by a supported language, empty/unsupported lists, and saved manual choices. All selected the expected resource language and loaded 64 strings. Neither system defaults nor the real user profile was modified.
+- Nineteen active, key-window screenshots covered all five introduction stages in English, Simplified Chinese, and Japanese, the three settings languages, and Chinese dark appearance. They use the final UI, configuration sources, resources, and day/night artwork. Source bindings place icon-only Back before the header spacer and Skip after it, with localized accessibility names and help. Six fake-actions model checks passed; no pointer, keyboard, or Accessibility hit-testing was performed. The demonstration screenshots use simulated progress and do not prove animation or display recovery.
+- The persistent native window check passed 60 accepted-frame and minimum-layout checks on both connected displays, without display control. Both displays used 2× scaling; this did not synthesize mouse dragging or test mixed-scale screens.
+- The repository artwork, installed 1.2.2 icon, and macOS icon service already agreed on the day/night switch before this change. The new package uses an explicit `SceneHush-DayNight` bundle icon key, and its ICNS bytes match that same source artwork. This is a targeted refresh, not evidence that an old system cache was reproduced.
+- Universal arm64/x86_64 packaging, strict ad-hoc signature verification, three-language diagnostics, and local DMG/ZIP checksums passed. The three README download buttons use local SVG artwork and point to the 1.2.3 DMG, with ZIP and release-list links alongside them.
+
+These checks performed no gamma dimming or agent compatibility test. Intel runtime, macOS 13 fallback appearance, mixed-scale displays, and actual pointer hit-testing remain untested here. SceneHush still does not prevent sleep or automatic locking or guarantee continued execution for every agent. Public CI and release downloads are verified separately.
+
 ## 1.2.2 — onboarding and cross-display window layout
 
 Checked on 2026-11-06, on the same Apple Silicon Mac with two connected displays:

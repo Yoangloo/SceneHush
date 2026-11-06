@@ -1,11 +1,11 @@
 # SceneHush interface
 
-The interface should feel like a brief pause: quiet, legible, and easy to return from. The day/night switch connects the icon, introduction, and display demonstration without adding another concept to learn.
+The interface serves short breaks while local agents work: supported screens rest while apps and the current desktop session stay in place. Keep that purpose visible in the slogan and introduction. The day/night switch connects the icon, introduction, and display demonstration without adding another concept to learn.
 
 ## One continuous journey
 
 1. Welcome: introduce the name, slogan, and one-corner action. Use a direct Get started action.
-2. Permissions: explain that display dimming and corner detection need no extra access; distinguish optional launch at login. Start the demonstration only after the user chooses Try it. Place Skip in the top-left navigation area, alongside Back after the welcome step.
+2. Permissions: explain that display dimming and corner detection need no extra access; distinguish optional launch at login. Start the demonstration only after the user chooses Try it. Place Skip at the top right and an arrow-only Back control at the top left after the welcome step. Keep the arrow's accessibility label and help localized.
 3. Demonstration: darken actual display output, then restore saved RGB tables over five seconds. Let the introduction become visible as the displays brighten. Escape and window closing must restore immediately, and the recovery watchdog must cover interruption.
 4. Completion: confirm restoration, explain the unlocked-session boundary, and enter settings. The introduction can be replayed from settings; keep it out of the menu bar's action list.
 
@@ -25,7 +25,7 @@ Corner triggers pause while the introduction is open. Display state and preferen
 
 ## Copy and motion
 
-English, Simplified Chinese, and Japanese share meaning and hierarchy. Reassure users that SceneHush only changes display output and does not pause agents, without promising that every agent keeps running. The completed introduction separately explains sleep, automatic locking, and the absence of authentication.
+English, Simplified Chinese, and Japanese share meaning and hierarchy. Lead with local agents and the preserved desktop session. Reassure users that SceneHush only changes display output and does not pause applications, without promising that every agent keeps running. The completed introduction separately explains sleep, automatic locking, and the absence of authentication; SceneHush provides no keepalive or sleep-prevention feature.
 
 Small UI changes use brief fades. The five-second restoration is an intentional, optional display demonstration; it is not a loading delay. Test cancellation, repeated starts, and failure cleanup as part of the animation. A screenshot establishes layout only, not smoothness or recovery.
 

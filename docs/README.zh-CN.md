@@ -1,18 +1,25 @@
-<img src="../assets/SceneHush.png" alt="SceneHush 日夜切换图标" width="96" height="96">
+<img src="../assets/SceneHush.png?v=daynight-1.2.3" alt="SceneHush 日夜切换图标" width="96" height="96">
 
 # SceneHush
 
+<p>
+  <a href="https://github.com/Yoangloo/SceneHush/releases/download/v1.2.3/SceneHush-1.2.3-universal.dmg"><img src="../assets/download-macos-zh-Hans.svg" alt="下载 macOS 版" width="240" height="48"></a>
+  &nbsp; <a href="https://github.com/Yoangloo/SceneHush/releases/download/v1.2.3/SceneHush-1.2.3-universal.zip">ZIP</a> · <a href="https://github.com/Yoangloo/SceneHush/releases">所有版本</a>
+</p>
+
+macOS 13+ · Apple Silicon 与 Intel · 打开 DMG，将 **SceneHush.app** 拖入**应用程序**即可安装。
+
 [English](../README.md) · [简体中文](README.zh-CN.md) · [日本語](README.ja.md)
 
-**屏幕歇一会，工作继续。**
+**屏幕歇一会，本地 agent 继续工作。**
 
-SceneHush 是一个可独立运行的轻量 macOS 菜单栏 App。将鼠标移到选定角落，让已连接且受支持的屏幕暗下来；默认移开后，恢复各屏原来的显示状态。**1.2 版只使用 macOS 原生显示控制，无需配套 App。**
+SceneHush 为**本地 agent 工作期间的短暂离席**而做。将鼠标移到选定角落，调暗受支持屏幕，保留 App 和当前桌面会话；默认移开后恢复显示。**macOS 原生控制，无需配套 App。**
 
 <img src="images/settings-zh-Hans.png" alt="SceneHush 简体中文设置界面" width="600">
 
 ## 为什么做这个工具
 
-最初的需求很简单：MacBook 同时连接外接显示器时，希望一个角落就能让两块屏幕一起暗下来。SceneHush 从这个动作，成为面向电脑 agent 工作期间短暂离席的小工具。选一个角落，短暂离开，再回到原来的桌面会话。
+本地编程 agent 正在构建项目，浏览器 agent 还在处理任务，或一段自动化尚未结束。你想短暂离开，又想保留它们的 App 和当前桌面会话。SceneHush 让受支持屏幕歇一会，回来仍是熟悉的会话。
 
 SceneHush 调整显示输出，不在桌面上盖黑色窗口；不会向 agent 发送暂停指令、关闭它们的 App 或退出登录。一些桌面流程依赖未锁定的会话或前台交互，另一些 agent 可以独立运行。截图表现和 agent 兼容性仍需在自己的环境中验证。
 
@@ -21,6 +28,7 @@ SceneHush 调整显示输出，不在桌面上盖黑色窗口；不会向 agent 
 ## 功能
 
 - 四个角任选，所选角落在每块已连接的屏幕上都能触发。
+- 保留本地 agent 的 App 与当前桌面会话；SceneHush 只调暗显示，不暂停应用。
 - 通过原生 CoreGraphics 控制，同时调暗受支持的内置屏和外接屏输出。
 - 移开鼠标恢复，或保持暗屏、再次进入角落时恢复。
 - 首次引导解释权限，并提供可选的 5 秒暗屏渐亮演示。
@@ -35,11 +43,13 @@ SceneHush 调整显示输出，不在桌面上盖黑色窗口；不会向 agent 
 
 1. 从 [Releases](https://github.com/Yoangloo/SceneHush/releases/latest) 下载 DMG 或 ZIP。
 2. 将 **SceneHush.app** 拖到**应用程序**后打开；ZIP 请先解压。
-3. 点击「**开始**」了解权限，准备好后点击「**试试**」体验 5 秒演示；「**跳过**」位于左上角。
+3. 点击「**开始**」了解权限，准备好后点击「**试试**」体验 5 秒演示；「**跳过**」位于右上角，左上角箭头用于返回上一步。
 4. 演示让已连接且受支持的屏幕变黑，再用 5 秒逐渐恢复原来的显示状态。按 **Escape** 可立即恢复；引导打开时暂停角落触发。
 5. 完成引导进入设置，选择触发角落，再将鼠标移入试用。
 
 顶部菜单栏仅显示小太阳图标，点开后可看到 SceneHush 名称；Dock 中不显示图标。引导入口保留在设置页，不在顶部菜单中列出。引导页左下角显示 App 版本。
+
+首次启动按 macOS 语言偏好顺序使用首个支持的语言（英语、中文或日语），无匹配时使用英语；手动选择的语言会保留。
 
 此版本使用 **ad-hoc 签名，尚无 Developer ID 签名及 Apple 公证**。如 macOS 阻止打开，请先确认信任本仓库和下载的 Release，再到**系统设置 → 隐私与安全性 → 仍要打开**。也可以从源码自行构建。校验和用于确认文件一致性，不能替代 Apple 公证。
 

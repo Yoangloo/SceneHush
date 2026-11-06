@@ -101,15 +101,22 @@ private struct OnboardingView: View {
                 }
             }.accessibilityHidden(true)
             HStack(spacing: 18) {
+                if model.stage == .permissions {
+                    Button { model.stage = .welcome } label: {
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 12, weight: .medium))
+                            .frame(width: 28, height: 28)
+                            .contentShape(Rectangle())
+                    }
+                    .accessibilityLabel(l("onboarding.back"))
+                    .accessibilityIdentifier("onboarding.back")
+                    .help(l("onboarding.back"))
+                }
+                Spacer()
                 if model.stage == .welcome || model.stage == .permissions || model.stage == .failed {
                     Button(l("onboarding.skip"), action: model.actions.finishOnboarding)
                         .accessibilityIdentifier("onboarding.skip")
                 }
-                if model.stage == .permissions {
-                    Button(l("onboarding.back")) { model.stage = .welcome }
-                        .accessibilityIdentifier("onboarding.back")
-                }
-                Spacer()
             }
             .font(.system(size: 11)).buttonStyle(.plain).foregroundStyle(.secondary)
             .disabled(model.cancelling)
