@@ -11,11 +11,12 @@ other unused files are omitted. The hashes can be checked from this directory
 with `shasum -a 256 -c` against each manifest. Normal packaging requires no pip
 installation or network access.
 
-`generate_layout.py` uses the same Alias/Bookmark APIs as `dmgbuild` 1.6.5. The
-bookmark records only a volume UUID and a path relative to that volume, without
-a locator for the developer's temporary writable image. Structural validation
-rejects extra bookmark tables, backing-image locators, private build paths and
-user identity. Apple's frameworks separately verify that both references
+`generate_layout.py` uses these helpers for DS_Store records, legacy Alias
+creation, and bookmark parsing and serialization. Apple Foundation creates the
+native bookmark; the wrapper preserves its path and volume metadata while
+removing backing-image locators, extra tables and security-scope data. Any
+identity fields are anonymized. Structural validation rejects private build
+paths and unexpected metadata. Apple's frameworks separately verify that both references
 resolve inside the final mounted volume.
 
 These Python sources are not copied into SceneHush.app. They do not run when a
