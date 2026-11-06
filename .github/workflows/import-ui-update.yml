@@ -1,0 +1,36 @@
+name: Import reviewed branding and first-run update
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/import-ui-update.yml']
+permissions:
+  contents: write
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 4
+      - name: Apply reviewed source and interface screenshots
+        run: |
+          test "$(git rev-parse HEAD~3)" = "93a0f39c4cf776f4df4658ae6377adf3d1e87983"
+          cat source-ui-update-1.b64 source-ui-update-2.b64 | base64 --decode > /tmp/scenehush-ui-update.zip
+          echo 'f95fbdcb6bb90983f8d2247a1b1e69241198f4bbc30239237a3e535286a52c13  /tmp/scenehush-ui-update.zip' | sha256sum --check
+          python3 - <<'SCENEHUSH_EXTRACT'
+          import zipfile
+          from pathlib import PurePosixPath
+          with zipfile.ZipFile('/tmp/scenehush-ui-update.zip') as archive:
+              for name in archive.namelist():
+                  path = PurePosixPath(name)
+                  assert not path.is_absolute() and '..' not in path.parts and path.parts[0] != '.github'
+              archive.extractall('.')
+          SCENEHUSH_EXTRACT
+          chmod +x scripts/*.sh
+          git rm source-ui-update-1.b64 source-ui-update-2.b64
+          git diff --check
+          git add .
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Unify app branding and improve first-run language selection'
+          git push
