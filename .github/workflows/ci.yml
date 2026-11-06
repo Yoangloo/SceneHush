@@ -28,13 +28,13 @@ jobs:
           /usr/libexec/PlistBuddy -c 'Print :LSMinimumSystemVersion' build/SceneHush.app/Contents/Info.plist
 
   packaging:
-    name: Verify universal installer and archives
+    name: Verify universal DMG and ZIP
     needs: test
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Build universal app and packages
+      - name: Build universal app and downloads
         run: ./scripts/package.sh --arch universal
-      - name: Inspect installer and release archives without installing
+      - name: Inspect disk image and app archive without installing
         run: python3 scripts/installer/verify-package.py --arch universal
 
