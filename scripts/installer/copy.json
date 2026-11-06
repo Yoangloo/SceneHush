@@ -1,0 +1,122 @@
+{
+  "en": {
+    "language": "en",
+    "welcome_title": "Screens at rest. Agents in motion.",
+    "readme_title": "Before you continue",
+    "conclusion_title": "Ready when you are",
+    "guide_title": "A quieter screen. Your agents keep working.",
+    "purpose": "Take a short break while local agents keep working. SceneHush dims supported displays when your pointer enters a corner, then restores them when it leaves. It runs natively on macOS, with no companion app.",
+    "installation_title": "Install SceneHush",
+    "installation": "Requires macOS 13 or later. The standard macOS installer places SceneHush in Applications and may ask for an administrator password. It does not start the app or change display settings during installation.",
+    "upgrade_title": "Updating an existing installation?",
+    "upgrade": "Before updating, restore your displays and quit the old SceneHush from its menu bar menu. Your SceneHush preferences are preserved.",
+    "permissions_title": "Simple permissions",
+    "permissions": "Display control needs no Accessibility or Screen Recording permission, and no BetterDisplay. Administrator permission is only for installation in Applications. Optional launch at login may need approval in macOS Login Items.",
+    "safety_title": "Dimming is not locking",
+    "safety": "SceneHush changes RGB display output. It does not lock your Mac, prevent sleep, or guarantee agent compatibility. Anyone nearby can restore the display and use the computer. Use the system lock screen in public or shared spaces. Keep the Mac awake through your existing workflow if your agents need it. HDR, virtual displays, and some drivers may be unsupported.",
+    "blocked_title": "If macOS blocks opening",
+    "unsigned": "This release is not notarized by Apple; the installer is unsigned and the app uses an ad-hoc signature. Only continue if you downloaded it from Yoangloo/SceneHush on GitHub and trust the source.",
+    "blocked_steps": [
+      "Try opening the downloaded .pkg, or SceneHush after installation. Dismiss the warning with Done or OK.",
+      "Open System Settings > Privacy & Security, then scroll to Security.",
+      "Find the message for that installer or app and click Open Anyway. Authenticate if asked, then click Open in the next confirmation."
+    ],
+    "two_checks": "The .pkg installer and SceneHush app are checked separately, so you may need to repeat these steps for each. On a managed Mac, your organization may restrict this setting.",
+    "installed": "SceneHush is installed in /Applications. Open it yourself to begin; the installer leaves your displays and running agents alone.",
+    "launch_steps": [
+      "Open Finder > Applications > SceneHush.",
+      "Look for the small sun in the menu bar and follow the introduction. Try or skip the five-second dim-and-restore demo.",
+      "Choose a corner. Move the pointer away to restore the display; Escape also restores immediately."
+    ],
+    "install_steps": [
+      "Double-click Install SceneHush.pkg in this disk image, or the .pkg downloaded from GitHub.",
+      "Follow the macOS Installer and choose Install. Restore displays and quit an older SceneHush first.",
+      "Open Finder > Applications > SceneHush. Follow the introduction, then choose your corner."
+    ],
+    "open_settings": "Open Privacy & Security",
+    "manual_settings": "If this link does not reach the right page, open System Settings manually and choose Privacy & Security > Security.",
+    "apple_link": "Apple’s guide to opening apps safely",
+    "downloads": "Official downloads",
+    "github": "Star SceneHush on GitHub"
+  },
+  "zh-Hans": {
+    "language": "zh-Hans",
+    "welcome_title": "屏幕歇一会，agent 继续忙。",
+    "readme_title": "安装前了解一下",
+    "conclusion_title": "准备好了，随时开始。",
+    "guide_title": "让屏幕安静，让 agent 继续。",
+    "purpose": "短暂离开时，让本地 agent 继续工作。鼠标移入设定角落，SceneHush 会调暗所有受支持屏幕；移开鼠标，画面恢复如初。macOS 原生运行，无需配套 App。",
+    "installation_title": "安装 SceneHush",
+    "installation": "需要 macOS 13 或更新版本。标准 macOS 安装器会将 SceneHush 安装至「应用程序」，可能要求管理员密码。安装过程不会自动运行 App，也不会改变屏幕显示。",
+    "upgrade_title": "正在更新旧版本？",
+    "upgrade": "更新前，请先在菜单栏中恢复显示，并退出旧版 SceneHush。你已有的 SceneHush 设置会保留。",
+    "permissions_title": "授权很简单",
+    "permissions": "显示控制无需辅助功能、屏幕录制权限，也不需要 BetterDisplay。管理员授权仅用于安装到「应用程序」。可选的登录时启动，可能需要在 macOS 登录项中批准。",
+    "safety_title": "暗屏不等于锁屏",
+    "safety": "SceneHush 调暗的是 RGB 显示输出，不会锁定 Mac、阻止休眠，也不保证每一种 agent 工作流兼容。旁人仍能恢复画面并操作电脑；公共或共享环境请使用系统锁屏。agent 需要持续运行时，请沿用你现有的防休眠方式。HDR、虚拟显示屏及部分驱动可能不受支持。",
+    "blocked_title": "如果被 macOS 拦截",
+    "unsigned": "此版本尚未经过 Apple 公证；安装包未签名，App 使用临时签名。请先确认文件来自 GitHub 的 Yoangloo/SceneHush，且你信任该来源，再继续。",
+    "blocked_steps": [
+      "先尝试打开下载的 .pkg，或安装后的 SceneHush；在警告框中点「完成」或「好」关闭提示。",
+      "打开「系统设置 > 隐私与安全性」，向下找到「安全性」。",
+      "找到对应安装包或 App 的拦截提示，点「仍要打开」。如有要求，完成身份验证，再在确认窗口点「打开」。"
+    ],
+    "two_checks": "macOS 会分别检查 .pkg 安装包和 SceneHush App，因此两者可能各需要操作一次。公司或学校管理的 Mac 可能限制此设置。",
+    "installed": "SceneHush 已安装到 /Applications（应用程序）。请手动打开以开始使用；安装器不会改变屏幕显示或打断正在运行的 agent。",
+    "launch_steps": [
+      "打开「访达 > 应用程序 > SceneHush」。",
+      "在菜单栏找到小太阳，跟随使用引导；可以体验或跳过 5 秒暗屏渐亮演示。",
+      "选择触发角落。移开鼠标恢复显示，按 Escape 也能立即恢复。"
+    ],
+    "install_steps": [
+      "双击此磁盘映像中的 Install SceneHush.pkg，或从 GitHub 下载的 .pkg 文件。",
+      "跟随 macOS 安装器，点击「安装」。更新前请先恢复显示并退出旧版 SceneHush。",
+      "打开「访达 > 应用程序 > SceneHush」，完成引导后选择触发角落。"
+    ],
+    "open_settings": "打开「隐私与安全性」",
+    "manual_settings": "如果链接没有跳转到对应页面，请手动打开「系统设置 > 隐私与安全性」，向下找到「安全性」。",
+    "apple_link": "查看 Apple 的安全打开 App 指南",
+    "downloads": "官方下载",
+    "github": "在 GitHub 点个 Star，支持作者"
+  },
+  "ja": {
+    "language": "ja",
+    "welcome_title": "画面はひと休み。エージェントは続行。",
+    "readme_title": "インストールの前に",
+    "conclusion_title": "準備ができました。",
+    "guide_title": "画面は静かに。エージェントはそのまま。",
+    "purpose": "少し席を外す間も、ローカルのエージェントは作業を続けられます。ポインタを指定したコーナーに移動すると、SceneHush が対応画面を暗くし、離すと元に戻します。macOS ネイティブで、追加アプリは不要です。",
+    "installation_title": "SceneHush をインストール",
+    "installation": "macOS 13 以降に対応しています。macOS 標準のインストーラが「アプリケーション」に配置します。管理者パスワードを求められる場合があります。インストール中にアプリを起動したり、画面を変更したりすることはありません。",
+    "upgrade_title": "以前のバージョンを更新する場合",
+    "upgrade": "更新の前に、メニューバーから画面を元に戻し、古い SceneHush を終了してください。既存の SceneHush 設定は保持されます。",
+    "permissions_title": "シンプルな権限",
+    "permissions": "表示制御にアクセシビリティや画面収録の権限、BetterDisplay は不要です。管理者権限は「アプリケーション」へのインストールにのみ使います。任意のログイン時の起動には、macOS のログイン項目で承認が必要な場合があります。",
+    "safety_title": "暗転は画面ロックではありません",
+    "safety": "SceneHush は RGB 出力を暗くします。Mac のロックやスリープ防止は行わず、すべてのエージェントとの互換性も保証しません。他の人が画面を復元して操作できるため、公共・共有の場所ではシステムの画面ロックを使用してください。エージェントの実行に必要な場合は、普段のスリープ防止方法を併用してください。HDR、仮想画面、一部のドライバーは非対応の場合があります。",
+    "blocked_title": "macOS にブロックされた場合",
+    "unsigned": "このバージョンは Apple の公証を受けていません。インストーラは未署名で、アプリはアドホック署名です。GitHub の Yoangloo/SceneHush からダウンロードしたことと、配布元を信頼できることを確認してから続行してください。",
+    "blocked_steps": [
+      "ダウンロードした .pkg、またはインストール後の SceneHush を一度開きます。警告の「完了」または「OK」で閉じます。",
+      "「システム設定 > プライバシーとセキュリティ」を開き、「セキュリティ」までスクロールします。",
+      "該当するインストーラまたはアプリのメッセージで「このまま開く」を選びます。必要に応じて認証し、次の確認で「開く」を選択します。"
+    ],
+    "two_checks": ".pkg インストーラと SceneHush アプリは別々に確認されるため、それぞれに同じ操作が必要な場合があります。組織が管理する Mac では、この設定が制限されることがあります。",
+    "installed": "SceneHush が /Applications（アプリケーション）にインストールされました。手動で起動して開始してください。インストーラは画面や実行中のエージェントを変更しません。",
+    "launch_steps": [
+      "「Finder > アプリケーション > SceneHush」を開きます。",
+      "メニューバーの小さな太陽からガイドを進めます。5 秒間の暗転・復元デモは試すこともスキップすることもできます。",
+      "コーナーを選択します。ポインタを離すと画面が戻り、Escape でもすぐに復元できます。"
+    ],
+    "install_steps": [
+      "ディスクイメージ内の Install SceneHush.pkg、または GitHub からダウンロードした .pkg をダブルクリックします。",
+      "macOS インストーラに従い、「インストール」を選択します。更新する場合は、先に画面を復元して旧版を終了してください。",
+      "「Finder > アプリケーション > SceneHush」を開き、ガイドの後にコーナーを選択します。"
+    ],
+    "open_settings": "「プライバシーとセキュリティ」を開く",
+    "manual_settings": "正しいページが開かない場合は、「システム設定 > プライバシーとセキュリティ」を手動で開き、「セキュリティ」までスクロールしてください。",
+    "apple_link": "Apple のアプリを安全に開くためのガイド",
+    "downloads": "公式ダウンロード",
+    "github": "GitHub の Star で開発を応援"
+  }
+}

@@ -2,9 +2,9 @@
 set -euo pipefail
 
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-APP_VERSION="${1:-1.2.3}"
+APP_VERSION="${1:-1.2.4}"
 if [[ ! "$APP_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-  printf 'Version must have the form 1.2.3.\n' >&2
+  printf 'Version must have the form 1.0.0.\n' >&2
   exit 2
 fi
 NOTES_PATH="$PROJECT_ROOT/docs/RELEASE_NOTES.md"

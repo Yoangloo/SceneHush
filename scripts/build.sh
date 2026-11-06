@@ -2,13 +2,13 @@
 set -euo pipefail
 
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-APP_VERSION="1.2.3"
+APP_VERSION="1.2.4"
 ARCHITECTURE="universal"
 CONFIGURATION="release"
 
 usage() {
   cat <<'USAGE'
-Usage: scripts/build.sh [--arch universal|arm64|x86_64] [--version 1.2.3]
+Usage: scripts/build.sh [--arch universal|arm64|x86_64] [--version 1.2.4]
                         [--configuration release|debug]
 
 Builds build/SceneHush.app with the installed Xcode command line tools.

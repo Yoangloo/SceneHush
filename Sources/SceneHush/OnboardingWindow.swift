@@ -162,9 +162,12 @@ private struct OnboardingView: View {
             VStack(spacing: 25) {
                 DayNightOrb(progress: 1)
                 heading(l("onboarding.complete.title"), l("onboarding.complete.body"))
-                Label(l("onboarding.complete.restored"), systemImage: "checkmark.circle.fill")
-                    .font(.system(size: 12, weight: .medium)).foregroundStyle(ScenePalette.accent)
-                    .padding(.horizontal, 16).padding(.vertical, 10).scenePanel()
+                Label {
+                    Text(l("onboarding.complete.restored")).foregroundStyle(.secondary)
+                } icon: {
+                    Image(systemName: "checkmark.circle.fill").foregroundStyle(.green)
+                }
+                .font(.system(size: 12, weight: .medium))
                 Text(l("onboarding.complete.note")).font(.system(size: 11)).foregroundStyle(.secondary)
                     .lineSpacing(4).multilineTextAlignment(.center).fixedSize(horizontal: false, vertical: true)
             }

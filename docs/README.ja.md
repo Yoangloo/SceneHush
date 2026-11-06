@@ -2,14 +2,19 @@
 
 # SceneHush
 
+[English](../README.md) · [简体中文](README.zh-CN.md) · [日本語](README.ja.md)
+
 <p>
-  <a href="https://github.com/Yoangloo/SceneHush/releases/download/v1.2.3/SceneHush-1.2.3-universal.dmg"><img src="../assets/download-macos-ja.svg" alt="macOS 版をダウンロード" width="240" height="48"></a>
-  &nbsp; <a href="https://github.com/Yoangloo/SceneHush/releases/download/v1.2.3/SceneHush-1.2.3-universal.zip">ZIP</a> · <a href="https://github.com/Yoangloo/SceneHush/releases">すべてのリリース</a>
+  <a href="https://github.com/Yoangloo/SceneHush/releases/download/v1.2.4/SceneHush-1.2.4-universal.pkg"><img src="../assets/download-macos-ja.svg" alt="macOS 版をダウンロード" width="240" height="48"></a>
 </p>
 
-macOS 13+ · Apple Silicon・Intel · DMG を開き、**SceneHush.app** を**アプリケーション**へドラッグしてインストールします。
+<p>
+  <a href="https://github.com/Yoangloo/SceneHush/releases/download/v1.2.4/SceneHush-1.2.4-universal.zip">ZIP</a> · <a href="https://github.com/Yoangloo/SceneHush/releases/download/v1.2.4/SceneHush-1.2.4-universal.dmg">DMG</a> · <a href="https://github.com/Yoangloo/SceneHush/releases">すべてのリリース</a>
+</p>
 
-[English](../README.md) · [简体中文](README.zh-CN.md) · [日本語](README.ja.md)
+macOS 13+ · Apple Silicon・Intel · PKG を開き、システムのインストーラに従って**アプリケーション**へインストールします。
+
+[インストールがブロックされた場合の手順](INSTALL.md#日本語)
 
 **画面はひと休み。ローカルエージェントは作業中。**
 
@@ -41,9 +46,9 @@ Mac のスリープや自動ロックを防がず、エージェントの動作�
 
 ## インストールと初回ガイド
 
-1. [Releases](https://github.com/Yoangloo/SceneHush/releases/latest) から DMG または ZIP をダウンロードします。
-2. **SceneHush.app** を**アプリケーション**にドラッグして開きます。ZIP は先に展開してください。
-3. 「**はじめる**」で権限の説明を確認し、準備ができたら「**試してみる**」で 5 秒間のデモを開始します。「**スキップ**」は右上、前のステップに戻る矢印は左上にあります。
+1. [Releases](https://github.com/Yoangloo/SceneHush/releases/latest) から PKG をダウンロードします。
+2. PKG をダブルクリックし、システムのインストーラに従って**アプリケーション**へインストールします。管理者認証が必要になる場合があります。完了後、アプリケーションから **SceneHush** を開きます。
+3. macOS がインストーラやアプリをブロックした場合は、[インストール手順](INSTALL.md#日本語)を確認してください。開いたら「**はじめる**」で権限の説明を確認し、準備ができたら「**試してみる**」で 5 秒間のデモを開始します。「**スキップ**」は右上、前のステップに戻る矢印は左上にあります。
 4. 接続中の対応画面が暗くなり、5 秒かけて保存した表示状態へ戻ります。**Escape** キーで直ちに復元できます。ガイドの表示中はコーナー操作が一時停止します。
 5. ガイドを完了すると設定が開きます。隅を選び、ポインタを移動して試してください。
 
@@ -51,13 +56,13 @@ Mac のスリープや自動ロックを防がず、エージェントの動作�
 
 初回起動では macOS の優先する言語を順に確認し、対応する英語・中国語・日本語のうち最初に一致する言語を使います。一致しない場合は英語を使い、手動で選んだ言語は保存します。
 
-このリリースは **ad-hoc 署名のみで、Developer ID 署名と Apple の公証はありません**。macOS にブロックされた場合は、配布元を信頼できることを確認してから、**システム設定 → プライバシーとセキュリティ → このまま開く**を選択してください。ソースからビルドすることもできます。チェックサムはファイルの一致を確認するもので、公証の代わりではありません。
+DMG には PKG とインストールガイドを含み、ZIP はアプリを手動で配置するために使えます。このリリースには **Developer ID 署名と Apple の公証がありません**。システムのインストーラを使っても Gatekeeper の確認は必要です。ブロックされた場合は、配布元を信頼できることを確認してから、[「このまま開く」の手順](INSTALL.md#日本語)を参照してください。チェックサムはファイルの一致を確認するもので、公証の代わりではありません。
 
 ## 必要な権限
 
 <img src="images/onboarding-permissions-ja.png" alt="SceneHush ガイドの画面制御・コーナー検出・ログイン項目の権限説明" width="420">
 
-標準の表示制御とコーナー検出に、**アクセシビリティ、画面収録、管理者の権限は不要**です。SceneHush は画面をキャプチャーせず、他のアプリも操作しません。ガイドではその違いを説明し、使わない権限を要求しません。
+標準の表示制御とコーナー検出に、**アクセシビリティ、画面収録、管理者の権限は不要**です。インストール時には、システムのインストーラが管理者認証を求める場合があります。SceneHush は画面をキャプチャーせず、他のアプリも操作しません。ガイドではその違いを説明し、使わない権限を要求しません。
 
 **ログイン時の起動は任意です。** 有効にすると、macOS のログイン項目で承認が必要になる場合があります。競合するホットコーナーの変更もアプリ内で利用者が選び、元の設定を保存します。
 
@@ -96,7 +101,7 @@ make build
 make package
 ```
 
-アプリは `build/SceneHush.app`、DMG・ZIP・SHA-256 チェックサムは `dist/` に生成します。配布版には **arm64 と x86_64** を含みます。Apple Silicon での高速なローカルビルドには `make build ARCH=arm64` を使えます。開発チェックは [CONTRIBUTING.md](../CONTRIBUTING.md)、測定結果と未検証環境は[検証記録](VALIDATION.md)を参照してください。
+アプリは `build/SceneHush.app`、PKG・DMG・ZIP・SHA-256 チェックサムは `dist/` に生成します。配布版には **arm64 と x86_64** を含みます。Apple Silicon での高速なローカルビルドには `make build ARCH=arm64` を使えます。開発チェックは [CONTRIBUTING.md](../CONTRIBUTING.md)、測定結果と未検証環境は[検証記録](VALIDATION.md)を参照してください。
 
 ## フィードバックとライセンス
 

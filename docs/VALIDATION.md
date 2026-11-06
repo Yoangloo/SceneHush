@@ -1,5 +1,18 @@
 # Validation record
 
+## 1.2.4 — native installer and completion status
+
+Checked on 2026-11-06 on the same Apple Silicon Mac:
+
+- All 32 core tests passed. The universal arm64/x86_64 app built successfully with a macOS 13 deployment target, passed strict ad-hoc signature verification, and loaded all 64 strings in each of its three languages.
+- Three active, key-window captures compiled the current UI and core sources with fake actions. English, Simplified Chinese, and Japanese completion pages show a green check and secondary text, without a capsule background or button action. No text was truncated. These captures performed zero gamma operations and did not change the real user profile.
+- `python3 scripts/installer/verify-package.py --arch universal` passed on the final 1.2.4 artifacts. The native Installer distribution contains three localized page sets, permits only the LocalSystem domain, and installs only SceneHush.app into /Applications. Its payload matches the signed build, with no installation scripts, automatic launch, preference files, or security-setting changes. Read-only Installer metadata queries parsed the package successfully.
+- The DMG mounted read-only without opening Finder. It contains the matching PKG and offline three-language HTML guide as its two visible entries, plus committed Finder metadata. The ZIP app bytes, executable permissions, signature, and all three download checksums matched the build.
+- Opening the locally generated PKG displayed the native Installer welcome page and version 1.2.4. The test stopped there and closed Installer; it did not continue, authenticate, or install. The user-initiated Privacy & Security link opened that pane on this Mac without changing settings. The guide also retains the manual path.
+- All three README headers put the language links, main PKG download, and alternative ZIP/DMG/release links on separate rows, with installation help next to the downloads. CI and release workflows now run the archive verification before publishing.
+
+The installer is unsigned and the app has an ad-hoc signature; neither is Apple notarized. Opening a locally generated package does not establish the Gatekeeper experience of a quarantined browser download or another Mac. Administrator installation, Intel runtime, older macOS Installer appearance, physical Finder layout, and a fresh-machine first launch remain untested here. No new display-control or agent compatibility test was performed. Public CI and release downloads are checked separately.
+
 ## 1.2.3 — first-run language, branding, and download access
 
 Checked on 2026-11-06 on the same Apple Silicon Mac with two connected displays:

@@ -2,6 +2,15 @@
 
 Changes are grouped by release. Dates use the release's calendar date.
 
+## 1.2.4 — 2026-11-06
+
+### Changed
+
+- Put README language navigation, the main macOS download button, and ZIP/DMG/release links on three separate lines in all three languages.
+- Make a standard macOS Installer PKG the main download; include it with an installation guide in the optional DMG, and retain the ZIP for manual installation.
+- Add English, Simplified Chinese, and Japanese installation help, including Gatekeeper's Open Anyway flow and the distinction between installation authentication and display-control permissions.
+- Show status as a plain label without a capsule background.
+
 ## 1.2.3 — 2026-11-06
 
 ### Changed
