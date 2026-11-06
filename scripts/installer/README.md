@@ -9,11 +9,11 @@ python3 scripts/installer/verify-package.py --arch universal
 ```
 
 Packaging requires macOS, Xcode command line tools, and Python 3.9 or later.
-There are no pip installs or network requests. The MIT-licensed DS_Store and alias/bookmark
-writers are included as unmodified source; their versions, provenance and
+There are no pip installs or network requests. The MIT-licensed DS_Store and legacy alias
+helpers are included as unmodified source; their versions, provenance and
 upstream hashes are documented in [dmg/vendor/README.md](dmg/vendor/README.md).
-Apple frameworks render the background image and independently resolve the
-alias and bookmark data.
+Apple frameworks render the background image, create its native bookmark,
+and independently resolve both the alias and bookmark data.
 
 ## What users see
 
@@ -40,9 +40,10 @@ or skip it to reach settings.
 ## Finder background
 
 Packaging creates a temporary writable HFS+ image and mounts it with
-`-nobrowse -noautoopen`. The same alias/bookmark writers used by `dmgbuild` create references to the
-background inside that volume. The bookmark contains the volume UUID and a
-relative path, without a locator for the temporary backing image. The DS_Store writer records those references, window
+`-nobrowse -noautoopen`. Apple Foundation creates a minimal bookmark for the
+background inside that volume; the vendored helper creates its legacy alias.
+The bookmark preserves native path and volume metadata while removing backing-image
+locators, extra tables and security-scope data. The DS_Store writer records those references, window
 settings and icon positions. After unmounting, the image is converted to
 read-only compressed UDZO format. Finder or AppleScript is not used by the
 build, so no Automation permission is required.
