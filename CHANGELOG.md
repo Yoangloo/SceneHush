@@ -2,6 +2,14 @@
 
 Changes are grouped by release. Dates use the release's calendar date.
 
+## 1.2.1 — 2026-11-06
+
+### Changed
+
+- Give action buttons a shared capsule shape, height, and typography across settings and the introduction. Use equal sizing and matching treatment for the two settings actions.
+- Add the visible GitHub repository address and a localized invitation to leave a Star at the bottom of settings.
+- Extend English, Simplified Chinese, and Japanese resources for the support link and its accessible label.
+
 ## 1.2.0 — 2026-11-05
 
 ### Added

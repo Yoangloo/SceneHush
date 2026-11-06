@@ -33,6 +33,8 @@
   "error.generic": "The change could not be completed. Check the details below and try again.",
   "error.legacy": "Recovery data from an older version was found. Restore the displays with that version before using this one.",
   "selected": "Selected",
+  "footer.github.support": "Star on GitHub to support the author",
+  "footer.github.open": "Open SceneHush on GitHub",
   "onboarding.replay": "Replay introduction",
   "onboarding.back": "Back",
   "onboarding.continue": "A little introduction",

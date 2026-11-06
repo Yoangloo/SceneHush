@@ -1,5 +1,16 @@
 # Validation record
 
+## 1.2.1 — interface consistency
+
+Checked on 2026-11-06:
+
+- `make test`: all 29 existing tests passed. No display-control behavior changed in this release.
+- Universal arm64/x86_64 packaging and strict ad-hoc signature verification passed with a macOS 13 deployment target. The packaged localization diagnostic passed for English, Simplified Chinese, and Japanese, with 64 matching nonempty keys each.
+- A temporary harness compiled the current settings, introduction, shared styles, and localizer with fake actions. Seven actual window captures were active and key: three settings languages, Chinese dark appearance, 560-point width, a 700-point-high window scrolled to its footer, and the introduction permissions page. Both settings actions shared their size, capsule shape, typography, and native material. Control edges aligned, and the localized Star invitation and full repository address remained visible.
+- The harness did not construct the app delegate or native gamma controller, used no user preferences, and performed zero gamma operations. The non-key-window comparison was kept separate from the seven active-window checks. Documentation settings images were refreshed from the active captures.
+
+These are local UI and build checks. The original native display and recovery checks below remain historical evidence for the unchanged engine. Intel runtime and macOS 13 fallback appearance were not tested on hardware; public CI and release checks are recorded by GitHub Actions.
+
 ## 1.2.0 — local native GUI checks
 
 Recorded on **2026-11-05**, on one Apple Silicon Mac running **macOS 27.2**, with its built-in display and one external display, both in SDR mode. These results cover this setup, not universal display or agent compatibility.

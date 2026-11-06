@@ -2,7 +2,7 @@
 set -euo pipefail
 
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-APP_VERSION="1.2.0"
+APP_VERSION="1.2.1"
 ARCHITECTURE="universal"
 SKIP_BUILD=false
 
@@ -12,7 +12,7 @@ while [[ $# -gt 0 ]]; do
     --version) APP_VERSION="${2:?Missing version}"; shift 2 ;;
     --skip-build) SKIP_BUILD=true; shift ;;
     -h|--help)
-      printf 'Usage: scripts/package.sh [--arch universal|arm64|x86_64] [--version 1.2.0] [--skip-build]\n'
+      printf 'Usage: scripts/package.sh [--arch universal|arm64|x86_64] [--version 1.2.1] [--skip-build]\n'
       exit 0 ;;
     *) printf 'Unknown argument: %s\n' "$1" >&2; exit 2 ;;
   esac

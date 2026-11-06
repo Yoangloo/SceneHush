@@ -56,7 +56,7 @@ private struct SettingsView: View {
                                 Text(l("restore.onExit")).tag(true)
                                 Text(l("restore.onReentry")).tag(false)
                             }
-                            .labelsHidden().pickerStyle(.menu).tint(.primary).frame(width: 256).accessibilityIdentifier("settings.restore")
+                            .labelsHidden().pickerStyle(.menu).tint(.primary).frame(width: 256, alignment: .trailing).accessibilityIdentifier("settings.restore")
                         }
                     }.padding(.horizontal, 22).scenePanel()
                     VStack(spacing: 0) {
@@ -69,12 +69,14 @@ private struct SettingsView: View {
                             Picker(l("language.label"), selection: Binding(get: { model.configuration.language }, set: model.actions.setLanguage)) {
                                 ForEach(AppLanguage.allCases, id: \.self) { language in Text(l.language(language)).tag(language) }
                             }
-                            .labelsHidden().pickerStyle(.menu).tint(.primary).frame(width: 256).accessibilityIdentifier("settings.language")
+                            .labelsHidden().pickerStyle(.menu).tint(.primary).frame(width: 256, alignment: .trailing).accessibilityIdentifier("settings.language")
                         }
                     }.padding(.horizontal, 22).scenePanel()
                     HStack(spacing: 12) {
-                        SceneButton(l("onboarding.replay"), symbol: "play.circle", action: model.actions.showOnboarding)
-                        SceneButton(l("restore.now"), symbol: "sun.max", prominent: true, action: model.actions.restoreNow)
+                        SceneButton(l("onboarding.replay"), symbol: "play.circle", prominent: true, fillsWidth: true, action: model.actions.showOnboarding)
+                            .accessibilityIdentifier("settings.replay")
+                        SceneButton(l("restore.now"), symbol: "sun.max", prominent: true, fillsWidth: true, action: model.actions.restoreNow)
+                            .accessibilityIdentifier("settings.restoreNow")
                     }
                     if let issue = model.issue {
                         Label(issue, systemImage: "exclamationmark.triangle").font(.system(size: 12)).foregroundStyle(.red)
@@ -85,18 +87,31 @@ private struct SettingsView: View {
                         Text(l("risk.short")).font(.system(size: 11.5)).lineSpacing(3)
                     }
                     .foregroundStyle(.secondary).frame(maxWidth: .infinity, alignment: .leading).padding(.horizontal, 5)
-                    HStack {
-                        Button(l("system.restore"), action: model.actions.restoreSystemCorners)
-                        Spacer()
-                        Text("SceneHush \(appVersion)").foregroundStyle(.tertiary)
-                        Button("GitHub") { NSWorkspace.shared.open(URL(string: "https://github.com/Yoangloo/SceneHush")!) }
-                    }
-                    .font(.system(size: 11)).buttonStyle(.plain).foregroundStyle(.secondary).padding(.bottom, 20)
+                    VStack(spacing: 14) {
+                        HStack {
+                            Button(l("system.restore"), action: model.actions.restoreSystemCorners)
+                            Spacer()
+                            Text("SceneHush \(appVersion)").foregroundStyle(.tertiary)
+                        }
+                        .font(.system(size: 11)).buttonStyle(.plain).foregroundStyle(.secondary)
+                        Divider().opacity(0.5)
+                        Link(destination: URL(string: "https://github.com/Yoangloo/SceneHush")!) {
+                            VStack(spacing: 6) {
+                                Label(l("footer.github.support"), systemImage: "star")
+                                    .font(.system(size: 12, weight: .medium)).foregroundStyle(.primary)
+                                Text("github.com/Yoangloo/SceneHush")
+                                    .font(.system(size: 11)).foregroundStyle(.secondary)
+                            }
+                            .padding(.vertical, 6).frame(maxWidth: .infinity).contentShape(Rectangle())
+                        }
+                        .buttonStyle(.plain).accessibilityLabel(l("footer.github.open"))
+                        .accessibilityIdentifier("settings.github")
+                    }.padding(.bottom, 20)
                 }.padding(.horizontal, 32).frame(maxWidth: 620).frame(maxWidth: .infinity)
             }
         }.tint(ScenePalette.accent)
     }
-    private var appVersion: String { Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "1.2.0" }
+    private var appVersion: String { Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "1.2.1" }
     private var rowDivider: some View { Divider().opacity(0.5) }
     private func settingRow<Control: View>(_ title: String, detail: String? = nil, @ViewBuilder control: () -> Control) -> some View {
         HStack(spacing: 20) {
@@ -142,7 +157,7 @@ final class SettingsWindowController: NSWindowController {
     private let model: SettingsModel
     init(actions: SettingsActions) {
         model = SettingsModel(actions)
-        let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 620, height: 780),
+        let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 620, height: 840),
                               styleMask: [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView], backing: .buffered, defer: false)
         window.title = "SceneHush"; window.titleVisibility = .hidden; window.titlebarAppearsTransparent = true
         window.isReleasedWhenClosed = false; window.contentMinSize = NSSize(width: 560, height: 700)

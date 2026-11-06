@@ -74,9 +74,10 @@ struct SceneButton: View {
     let title: String
     var symbol: String?
     var prominent = false
+    var fillsWidth = false
     let action: () -> Void
-    init(_ title: String, symbol: String? = nil, prominent: Bool = false, action: @escaping () -> Void) {
-        self.title = title; self.symbol = symbol; self.prominent = prominent; self.action = action
+    init(_ title: String, symbol: String? = nil, prominent: Bool = false, fillsWidth: Bool = false, action: @escaping () -> Void) {
+        self.title = title; self.symbol = symbol; self.prominent = prominent; self.fillsWidth = fillsWidth; self.action = action
     }
     private var button: some View {
         Button(action: action) {
@@ -84,18 +85,23 @@ struct SceneButton: View {
                 if let symbol { Image(systemName: symbol) }
                 Text(title)
             }
-            .font(.system(size: 12, weight: .medium))
-            .padding(.horizontal, 9).frame(minHeight: 28)
+            .font(.system(size: 12, weight: .semibold))
+            .lineLimit(1)
+            .padding(.horizontal, 12).frame(maxWidth: fillsWidth ? .infinity : nil, minHeight: 28)
         }
         .controlSize(.large)
     }
+    @ViewBuilder private var shapedButton: some View {
+        if #available(macOS 14.0, *) { button.buttonBorderShape(.capsule) }
+        else { button }
+    }
     @ViewBuilder var body: some View {
         if #available(macOS 26.0, *) {
-            if prominent { button.buttonStyle(.glassProminent) }
-            else { button.foregroundStyle(.primary).buttonStyle(.glass) }
+            if prominent { shapedButton.buttonStyle(.glassProminent) }
+            else { shapedButton.foregroundStyle(.primary).buttonStyle(.glass) }
         } else {
-            if prominent { button.buttonStyle(.borderedProminent) }
-            else { button.foregroundStyle(.primary).buttonStyle(.bordered) }
+            if prominent { shapedButton.buttonStyle(.borderedProminent) }
+            else { shapedButton.foregroundStyle(.primary).buttonStyle(.bordered) }
         }
     }
 }

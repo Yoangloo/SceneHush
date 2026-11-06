@@ -90,6 +90,8 @@ The app is built at `build/SceneHush.app`. DMG, ZIP, and SHA-256 checksum files 
 
 ## Support and license
 
+If SceneHush helps you, [leave a Star on GitHub](https://github.com/Yoangloo/SceneHush) to support the author. The repository address is also available at the bottom of settings.
+
 Use [Issues](https://github.com/Yoangloo/SceneHush/issues) for bugs and suggestions. Include SceneHush and macOS versions, Mac architecture, display connections, HDR or virtual-screen settings, and steps to reproduce. Remove private information from logs and screenshots. See [SECURITY.md](SECURITY.md) and [CHANGELOG.md](CHANGELOG.md).
 
 SceneHush uses the [MIT License](LICENSE). See the [license selection notes](docs/LICENSING.md) for the rationale.

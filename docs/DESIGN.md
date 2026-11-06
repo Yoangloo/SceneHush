@@ -17,6 +17,8 @@ Corner triggers pause while the introduction is open. Display state and preferen
 - Align labels and control edges across rows. Separate behavior from preferences with spacing and restrained surfaces rather than giving each setting a card.
 - Use the system font, one cool accent, and a warm/cool day/night palette. The fine background pattern stays behind content and accepts no input.
 - Use native Liquid Glass button styles on macOS 26+. Older systems use bordered native controls and material surfaces. Respect Reduce Transparency for surfaces and Reduce Motion for decorative transitions.
+- Action buttons share a capsule shape, height, and type scale across settings and the introduction. The two settings actions have equal sizing and matching visual treatment, including in light and dark appearances.
+- Place the repository address and a short, localized invitation to leave a GitHub Star at the bottom of settings. Keep this support link visually separate from display controls.
 - Keep the menu bar icon only; show the name inside its menu. Preserve native keyboard focus, accessible labels, and all four corner choices.
 
 ## Copy and motion

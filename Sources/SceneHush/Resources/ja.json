@@ -33,6 +33,8 @@
   "error.generic": "変更を完了できませんでした。下の詳細を確認して再試行してください。",
   "error.legacy": "旧版の復元データが見つかりました。先に旧版アプリで画面を復元してから、このバージョンを使ってください。",
   "selected": "選択中",
+  "footer.github.support": "Star で作者を応援",
+  "footer.github.open": "GitHub で SceneHush を開く",
   "onboarding.replay": "ガイドをもう一度",
   "onboarding.back": "戻る",
   "onboarding.continue": "少しだけご紹介",

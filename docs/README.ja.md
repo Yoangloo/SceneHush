@@ -90,6 +90,8 @@ make package
 
 ## フィードバックとライセンス
 
+SceneHush が役に立ったら、[GitHub で Star](https://github.com/Yoangloo/SceneHush) を付けて作者を応援してください。設定画面の一番下にもリポジトリのアドレスがあります。
+
 不具合や提案は [Issues](https://github.com/Yoangloo/SceneHush/issues) にお寄せください。SceneHush と macOS のバージョン、Mac のアーキテクチャ、画面の接続、HDR・仮想画面の設定、再現手順を記載し、ログや画像から個人情報を除いてください。[SECURITY.md](../SECURITY.md) と [CHANGELOG.md](../CHANGELOG.md) も参照してください。
 
 SceneHush は [MIT ライセンス](../LICENSE) を採用しています。理由は[ライセンス選定メモ](LICENSING.md)に記載しています。

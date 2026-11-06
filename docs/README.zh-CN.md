@@ -90,6 +90,8 @@ App 生成在 `build/SceneHush.app`；DMG、ZIP 和 SHA-256 校验文件生成�
 
 ## 反馈与协议
 
+如果 SceneHush 帮到了你，欢迎[在 GitHub 点个 Star](https://github.com/Yoangloo/SceneHush)，支持一下作者。设置页底部也提供了仓库地址。
+
 欢迎通过 [Issues](https://github.com/Yoangloo/SceneHush/issues) 提交问题与建议。请提供 SceneHush、macOS 版本、Mac 架构、显示器连接方式、HDR 或虚拟屏设置及复现步骤，分享日志和截图前请移除隐私信息。另见 [SECURITY.md](../SECURITY.md) 和 [CHANGELOG.md](../CHANGELOG.md)。
 
 SceneHush 使用 [MIT 协议](../LICENSE)，选择理由见[协议说明](LICENSING.md)。

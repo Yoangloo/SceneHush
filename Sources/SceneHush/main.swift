@@ -53,7 +53,7 @@ func renderPreviews(at directory: String) throws {
     try FileManager.default.createDirectory(at: output, withIntermediateDirectories: true)
     func save(_ controller: NSWindowController, name: String, width: CGFloat? = nil) throws {
         guard let window = controller.window, let view = window.contentView else { return }
-        if let width { window.setContentSize(NSSize(width: width, height: 800)) }
+        if let width { window.setContentSize(NSSize(width: width, height: 840)) }
         view.layoutSubtreeIfNeeded()
         window.displayIfNeeded()
         RunLoop.current.run(until: Date().addingTimeInterval(0.4))
