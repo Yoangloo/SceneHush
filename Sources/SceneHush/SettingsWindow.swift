@@ -91,7 +91,7 @@ private struct SettingsView: View {
                         HStack {
                             Button(l("system.restore"), action: model.actions.restoreSystemCorners)
                             Spacer()
-                            Text("SceneHush \(appVersion)").foregroundStyle(.tertiary)
+                            Text("SceneHush \(SceneAppInfo.version)").foregroundStyle(.tertiary)
                         }
                         .font(.system(size: 11)).buttonStyle(.plain).foregroundStyle(.secondary)
                         Divider().opacity(0.5)
@@ -111,7 +111,6 @@ private struct SettingsView: View {
             }
         }.tint(ScenePalette.accent)
     }
-    private var appVersion: String { Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "1.2.1" }
     private var rowDivider: some View { Divider().opacity(0.5) }
     private func settingRow<Control: View>(_ title: String, detail: String? = nil, @ViewBuilder control: () -> Control) -> some View {
         HStack(spacing: 20) {
@@ -160,9 +159,18 @@ final class SettingsWindowController: NSWindowController {
         let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 620, height: 840),
                               styleMask: [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView], backing: .buffered, defer: false)
         window.title = "SceneHush"; window.titleVisibility = .hidden; window.titlebarAppearsTransparent = true
-        window.isReleasedWhenClosed = false; window.contentMinSize = NSSize(width: 560, height: 700)
+        window.isReleasedWhenClosed = false
         super.init(window: window)
-        window.contentView = NSHostingView(rootView: SettingsView(model: model))
+        let hostingView = NSHostingView(rootView: SettingsView(model: model))
+        // Keep SwiftUI measurement changes from resizing a window during a screen move.
+        hostingView.sizingOptions = []
+        hostingView.autoresizingMask = [.width, .height]
+        window.contentView = hostingView
+        NSLayoutConstraint.activate([
+            hostingView.widthAnchor.constraint(greaterThanOrEqualToConstant: 560),
+            hostingView.heightAnchor.constraint(greaterThanOrEqualToConstant: 700)
+        ])
+        window.contentMinSize = NSSize(width: 560, height: 700)
         window.center()
     }
     required init?(coder: NSCoder) { nil }

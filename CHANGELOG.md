@@ -2,6 +2,15 @@
 
 Changes are grouped by release. Dates use the release's calendar date.
 
+## 1.2.2 — 2026-11-06
+
+### Changed
+
+- Use a small sun for the menu bar icon and keep introduction replay in settings instead of the menu's action list.
+- Simplify introduction actions to Get started and Try it, move Skip to the top left, and show the app version at the bottom left.
+- Update English, Simplified Chinese, and Japanese guidance for the revised introduction.
+- Keep window frames and minimum sizes under AppKit control instead of SwiftUI content measurements, and limit introduction transitions to content animation.
+
 ## 1.2.1 — 2026-11-06
 
 ### Changed

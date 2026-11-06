@@ -39,6 +39,8 @@ Walk through a fresh launch, permission explanation, an explicitly started five-
 
 Check English, Simplified Chinese, and Japanese for clipping, keyboard access, focus, and aligned controls. Inspect Liquid Glass on macOS 26+ and the fallback on older systems when available. Respect Reduce Motion for decorative movement; the intentional display demonstration must remain optional with an immediate restoration action. Do not describe a screenshot as proof of smooth animation.
 
+For window layout changes, run `./scripts/test-window-layout.sh /tmp/scenehush-window-layout.json` in a macOS desktop session. It moves the actual views across connected displays with fake actions and checks that layout changes preserve accepted window frames and the settings minimum size. It performs no display dimming and is separate from headless CI. Also drag the windows manually between screens; the script does not synthesize mouse dragging.
+
 ## Release checks
 
 - Test and build from a clean checkout, then package the universal app.

@@ -24,7 +24,7 @@ SceneHush does not keep the Mac awake, prevent automatic locking, or guarantee c
 - Darken supported built-in and external display output together, using native CoreGraphics controls.
 - Restore when the pointer leaves, or keep displays dark until the next corner entry.
 - Get started with a permission explanation and an optional five-second dark-to-light demonstration.
-- Replay the introduction from the app; pause the trigger or restore displays immediately from the menu bar.
+- Replay the introduction from settings; pause the trigger or restore displays immediately from the menu bar.
 - Switch between the system language, English, 简体中文, and 日本語 without restarting.
 - Use a centered settings layout, a day/night switch icon, and Liquid Glass controls on macOS 26 or later. Earlier systems use native fallback controls.
 - Enable launch at login if you want it.
@@ -35,11 +35,11 @@ SceneHush does not keep the Mac awake, prevent automatic locking, or guarantee c
 
 1. Download the DMG or ZIP from [Releases](https://github.com/Yoangloo/SceneHush/releases/latest).
 2. Drag **SceneHush.app** into **Applications**, then open it. For a ZIP, extract the app first.
-3. The introduction explains what changes and which permissions are needed. Choose the five-second demonstration when you are ready, or skip it.
+3. Choose **Get started** to read the permission explanation, then **Try it** when you are ready for the five-second demonstration. **Skip** is at the top left.
 4. During the demonstration, connected supported displays go dark and gradually return to their saved appearance over five seconds. Press **Escape** to restore immediately. Corner triggers are paused while the introduction is open.
 5. Finish the introduction to open settings. Choose a corner, then move the pointer there to try it.
 
-Only an icon appears in the menu bar; open its menu to see the SceneHush name. There is no Dock icon. You can replay the introduction later.
+Only a small sun icon appears in the menu bar; open its menu to see the SceneHush name. There is no Dock icon. The introduction can be replayed from settings, and is not listed in the menu. Its bottom-left corner shows the app version.
 
 This release is **ad-hoc signed, without Developer ID signing or Apple notarization**. If macOS blocks it, confirm that you trust the repository and release, then use **System Settings → Privacy & Security → Open Anyway**. Building from source is another option. Checksums confirm file consistency; they do not replace notarization.
 

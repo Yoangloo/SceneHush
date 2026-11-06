@@ -1,10 +1,12 @@
-# SceneHush 1.2.1
+# SceneHush 1.2.2
 
 ## English
 
-The two settings actions now look like a pair: matching capsule shapes, height, sizing, and material. The introduction uses the same button geometry and typography. Native Liquid Glass remains available on macOS 26+, with native fallback controls on earlier systems.
+SceneHush now uses a small sun in the menu bar. Introduction replay stays on the settings page and has been removed from the menu's action list.
 
-The bottom of settings now shows the GitHub repository address and a short invitation to leave a Star in support of the author. The support text and accessible link name follow your English, Simplified Chinese, or Japanese language choice.
+The introduction has simpler actions: **Get started**, then **Try it**. **Skip** is at the top left, with Back available after the welcome step. The bottom left shows the app version, and the language selector stays at the bottom right. English, Simplified Chinese, and Japanese follow the same layout.
+
+Window sizing stays under AppKit control to prevent content measurements from moving or resizing the window during display changes. Introduction transitions animate the content only.
 
 SceneHush continues to use native macOS display control, with no companion app. Your corner, restore behavior, language, and introduction preferences are retained. Restore displays and quit an older release before updating.
 
@@ -14,9 +16,11 @@ SceneHush continues to use native macOS display control, with no companion app. 
 
 ## 简体中文
 
-设置页的两个操作按钮现在采用相同的胶囊形状、高度、尺寸和材质，看起来是一组。使用引导也沿用同一套按钮形状和字号。macOS 26+ 继续使用液态玻璃控件，较早系统使用原生兼容控件。
+菜单栏图标改为小太阳。引导入口保留在设置页，已从顶部菜单的操作列表中移除。
 
-设置页最底部新增 GitHub 仓库地址，以及「点个 Star，支持作者」入口。支持文案和链接的可访问性名称会随 English、简体中文或日本語设置切换。
+引导按钮改得更直接：先「**开始**」，再「**试试**」。「**跳过**」移到左上角，进入下一步后可从同一区域返回。左下角显示 App 版本，语言选择保留在右下角。英中日三语沿用相同布局。
+
+窗口尺寸交由 AppKit 管理，避免切换显示屏时内容尺寸测量引起窗口移动或缩放；引导只对内容切换应用动画。
 
 SceneHush 仍使用 macOS 原生显示控制，无需配套 App。原有角落、恢复方式、语言和引导偏好会保留。升级前请先恢复显示并退出旧版。
 
@@ -26,9 +30,11 @@ SceneHush 仍使用 macOS 原生显示控制，无需配套 App。原有角落�
 
 ## 日本語
 
-設定画面の二つの操作ボタンを、同じカプセル形状、高さ、サイズ、素材感に揃えました。初回ガイドにも同じボタンの形状と文字サイズを使います。macOS 26+ では引き続き Liquid Glass、それ以前では標準の互換コントロールを使います。
+メニューバーのアイコンを小さな太陽に変更しました。ガイドの再表示は設定画面に残し、メニューの操作一覧からは削除しました。
 
-設定画面の一番下に GitHub リポジトリのアドレスと、Star で作者を応援するリンクを追加しました。案内文とアクセシビリティ用のリンク名は、English・简体中文・日本語の言語設定に合わせて切り替わります。
+ガイドのボタンは「**はじめる**」、次に「**試してみる**」へと簡潔にしました。「**スキップ**」は左上に移動し、次のステップでは同じナビゲーション領域から戻れます。左下にはアプリのバージョン、右下には言語選択を表示します。英語・簡体字中国語・日本語で同じレイアウトを使います。
+
+ウインドウのサイズは AppKit で管理し、画面の切り替え時にコンテンツの計測で位置やサイズが変わることを防ぎます。ガイドのアニメーションはコンテンツの切り替えだけに適用します。
 
 SceneHush は引き続き macOS 標準の表示制御を使い、追加アプリは不要です。コーナー、復元方法、言語、ガイドの設定は引き継ぎます。更新前に画面を復元して旧版を終了してください。
 

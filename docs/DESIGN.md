@@ -4,10 +4,10 @@ The interface should feel like a brief pause: quiet, legible, and easy to return
 
 ## One continuous journey
 
-1. Welcome: introduce the name, slogan, and one-corner action.
-2. Permissions: explain that display dimming and corner detection need no extra access; distinguish optional launch at login. Start the demonstration only after the user chooses it, and provide a skip action.
+1. Welcome: introduce the name, slogan, and one-corner action. Use a direct Get started action.
+2. Permissions: explain that display dimming and corner detection need no extra access; distinguish optional launch at login. Start the demonstration only after the user chooses Try it. Place Skip in the top-left navigation area, alongside Back after the welcome step.
 3. Demonstration: darken actual display output, then restore saved RGB tables over five seconds. Let the introduction become visible as the displays brighten. Escape and window closing must restore immediately, and the recovery watchdog must cover interruption.
-4. Completion: confirm restoration, explain the unlocked-session boundary, and enter settings. The introduction can be replayed later.
+4. Completion: confirm restoration, explain the unlocked-session boundary, and enter settings. The introduction can be replayed from settings; keep it out of the menu bar's action list.
 
 Corner triggers pause while the introduction is open. Display state and preferences remain the same objects throughout the journey; a visual transition must not create a second dimming session or overwrite an original table.
 
@@ -19,7 +19,9 @@ Corner triggers pause while the introduction is open. Display state and preferen
 - Use native Liquid Glass button styles on macOS 26+. Older systems use bordered native controls and material surfaces. Respect Reduce Transparency for surfaces and Reduce Motion for decorative transitions.
 - Action buttons share a capsule shape, height, and type scale across settings and the introduction. The two settings actions have equal sizing and matching visual treatment, including in light and dark appearances.
 - Place the repository address and a short, localized invitation to leave a GitHub Star at the bottom of settings. Keep this support link visually separate from display controls.
-- Keep the menu bar icon only; show the name inside its menu. Preserve native keyboard focus, accessible labels, and all four corner choices.
+- Use a small sun as the menu bar icon, distinct from macOS Control Center. Keep it icon only and show the app name inside its menu. Preserve native keyboard focus, accessible labels, and all four corner choices.
+- Anchor the introduction's version at the bottom left and its language selector at the bottom right, keeping navigation at the top.
+- Let AppKit own window frames and minimum sizes. Disable automatic SwiftUI hosting-size constraints and autoresize hosted content within the window; limit introduction animations to the content region so display changes do not animate window geometry.
 
 ## Copy and motion
 

@@ -1,6 +1,12 @@
 import AppKit
 import SwiftUI
 
+enum SceneAppInfo {
+    static var version: String {
+        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "1.2.2"
+    }
+}
+
 enum ScenePalette {
     static let accent = Color(red: 0.28, green: 0.39, blue: 0.70)
     static let dawn = Color(red: 0.94, green: 0.73, blue: 0.43)

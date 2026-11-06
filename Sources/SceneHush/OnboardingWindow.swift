@@ -61,22 +61,17 @@ private struct OnboardingView: View {
         ZStack {
             SceneBackground()
             VStack(spacing: 0) {
-                HStack(spacing: 6) {
-                    ForEach(0..<3) { index in
-                        Capsule().fill(step >= index ? ScenePalette.accent : Color.primary.opacity(0.08))
-                            .frame(width: index == step ? 24 : 7, height: 5)
-                    }
-                }.padding(.top, 35).accessibilityHidden(true)
+                navigation.padding(.top, 36)
                 Spacer(minLength: 24)
                 content
                     .frame(maxWidth: 470)
                     .transition(reduceMotion ? .identity : .opacity)
+                    .animation(reduceMotion ? nil : .easeInOut(duration: 0.22), value: model.stage)
                 Spacer(minLength: 22)
                 controls
                 HStack {
-                    if model.stage == .permissions {
-                        Button(l("onboarding.back")) { model.stage = .welcome }
-                    } else { Text("SceneHush").foregroundStyle(.tertiary) }
+                    Text("v\(SceneAppInfo.version)").foregroundStyle(.tertiary)
+                        .accessibilityIdentifier("onboarding.version")
                     Spacer()
                     Picker(l("language.label"), selection: Binding(get: { model.language }, set: model.actions.setLanguage)) {
                         ForEach(AppLanguage.allCases, id: \.self) { value in Text(l.language(value)).tag(value) }
@@ -88,7 +83,6 @@ private struct OnboardingView: View {
                 .padding(.top, 26).padding(.bottom, 28)
             }
             .padding(.horizontal, 40)
-            .animation(reduceMotion ? nil : .easeInOut(duration: 0.22), value: model.stage)
         }
         .frame(width: 600, height: 650)
         .tint(ScenePalette.accent)
@@ -96,6 +90,30 @@ private struct OnboardingView: View {
 
     private var step: Int {
         switch model.stage { case .welcome: return 0; case .permissions: return 1; default: return 2 }
+    }
+
+    private var navigation: some View {
+        ZStack {
+            HStack(spacing: 6) {
+                ForEach(0..<3) { index in
+                    Capsule().fill(step >= index ? ScenePalette.accent : Color.primary.opacity(0.08))
+                        .frame(width: index == step ? 24 : 7, height: 5)
+                }
+            }.accessibilityHidden(true)
+            HStack(spacing: 18) {
+                if model.stage == .welcome || model.stage == .permissions || model.stage == .failed {
+                    Button(l("onboarding.skip"), action: model.actions.finishOnboarding)
+                        .accessibilityIdentifier("onboarding.skip")
+                }
+                if model.stage == .permissions {
+                    Button(l("onboarding.back")) { model.stage = .welcome }
+                        .accessibilityIdentifier("onboarding.back")
+                }
+                Spacer()
+            }
+            .font(.system(size: 11)).buttonStyle(.plain).foregroundStyle(.secondary)
+            .disabled(model.cancelling)
+        }.frame(height: 22)
     }
 
     @ViewBuilder private var content: some View {
@@ -164,8 +182,6 @@ private struct OnboardingView: View {
             case .permissions:
                 SceneButton(l("onboarding.demo.start"), symbol: "play.fill", prominent: true, action: model.start)
                     .accessibilityIdentifier("onboarding.start")
-                Button(l("onboarding.skip"), action: model.actions.finishOnboarding)
-                    .accessibilityIdentifier("onboarding.skip")
             case .demonstration:
                 SceneButton(l("onboarding.demo.cancel"), symbol: "escape") { model.cancel() }
                     .accessibilityIdentifier("onboarding.cancel")
@@ -174,7 +190,6 @@ private struct OnboardingView: View {
                     .accessibilityIdentifier("onboarding.finish")
             case .failed:
                 SceneButton(l("onboarding.retry"), symbol: "arrow.clockwise", prominent: true, action: model.start)
-                Button(l("onboarding.skip"), action: model.actions.finishOnboarding)
             }
         }.font(.system(size: 11)).buttonStyle(.plain).disabled(model.cancelling)
     }
@@ -234,6 +249,7 @@ final class OnboardingWindowController: NSWindowController, NSWindowDelegate {
         window.delegate = self
         let hostingView = NSHostingView(rootView: OnboardingView(model: model))
         hostingView.sizingOptions = []
+        hostingView.autoresizingMask = [.width, .height]
         window.contentView = hostingView
         window.escape = { [weak self] in
             guard let self else { return }

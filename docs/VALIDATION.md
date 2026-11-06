@@ -1,5 +1,17 @@
 # Validation record
 
+## 1.2.2 — onboarding and cross-display window layout
+
+Checked on 2026-11-06, on the same Apple Silicon Mac with two connected displays:
+
+- All 29 existing core tests passed; universal arm64/x86_64 packaging, strict ad-hoc signature verification, and the three-language diagnostic passed. The resource sets still contain 64 matching nonempty keys.
+- Eleven active, key-window captures covered the welcome, permissions, and completion pages in all three languages and Chinese settings in light/dark appearance. The header contains Skip, the footer leads with v1.2.2, and the two primary introduction actions use the shorter localized labels. Menu source inspection confirmed a template sun icon, no introduction menu entry, and the retained settings-page replay action.
+- A fake-actions harness verified introduction start, rejection of repeated starts, completion, and cancellation through the actual model. It did not exercise mouse, keyboard, or Accessibility hit-testing, and performed zero gamma operations. The settings screenshots preceded the final minimum-size anchor change; view content and the captured 620×840 size were unchanged by those anchors.
+- Comparing native windows exposed SwiftUI measurement changing the old settings minimum and intrinsic size. Settings now disables automatic hosting size propagation and uses stable 560×700 minimum constraints; both hosting views resize with their AppKit window. Only introduction content participates in stage animation.
+- A native window harness moved settings and introduction windows between the two connected displays, refreshed all three languages, and switched light/dark appearance. All 90 accepted window frames remained stable after layout settled, and settings fitting size retained its 560×700 minimum. This used programmatic AppKit frame moves, not synthesized physical dragging. Both connected displays used a 2× backing scale, so mixed-scale displays and the user's exact transient flash were not deterministically reproduced.
+
+`scripts/test-window-layout.sh` preserves the focused regression check. Its independent compile and run passed 60 checks on the same two displays. It compiles configuration types and the actual views with fake actions, excluding the display engine and app delegate. It requires a macOS desktop session and can write a JSON report to the supplied path.
+
 ## 1.2.1 — interface consistency
 
 Checked on 2026-11-06:

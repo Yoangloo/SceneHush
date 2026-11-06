@@ -75,7 +75,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, OnboardingActions {
 
     func refresh() {
         let l = localizer
-        item?.button?.image = NSImage(systemSymbolName: "switch.2", accessibilityDescription: "SceneHush")
+        let icon = NSImage(systemSymbolName: "sun.max", accessibilityDescription: "SceneHush")
+        icon?.isTemplate = true
+        item?.button?.image = icon
         item?.button?.toolTip = "SceneHush — " + l("subtitle")
         let menu = NSMenu()
         @discardableResult func add(_ title: String, _ action: Selector?, to parent: NSMenu? = nil, tag: Int = 0, selected: Bool = false) -> NSMenuItem {
@@ -104,7 +106,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate, OnboardingActions {
         menu.addItem(.separator())
         add(l("restore.now"), #selector(restoreNow))
         add(l("settings"), #selector(showSettings))
-        add(l("onboarding.replay"), #selector(showOnboarding))
         add(l("about"), #selector(about))
         menu.addItem(.separator())
         add(l("quit"), #selector(quit))
