@@ -27,3 +27,14 @@ jobs:
           codesign --verify --strict build/SceneHush.app
           /usr/libexec/PlistBuddy -c 'Print :LSMinimumSystemVersion' build/SceneHush.app/Contents/Info.plist
 
+  packaging:
+    name: Verify universal installer and archives
+    needs: test
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build universal app and packages
+        run: ./scripts/package.sh --arch universal
+      - name: Inspect installer and release archives without installing
+        run: python3 scripts/installer/verify-package.py --arch universal
+
