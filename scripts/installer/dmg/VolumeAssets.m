@@ -69,6 +69,16 @@ static void render(NSString *output) {
     if (![png writeToFile:output atomically:YES]) fail(@"Could not write disk image background");
 }
 
+static void bookmark(NSURL *root, NSString *output) {
+    NSError *error = nil;
+    NSURL *background = [root URLByAppendingPathComponent:@".background/background.png"];
+    NSData *data = [background bookmarkDataWithOptions:
+        NSURLBookmarkCreationMinimalBookmark | NSURLBookmarkCreationWithoutImplicitSecurityScope
+        includingResourceValuesForKeys:nil relativeToURL:nil error:&error];
+    if (!data || ![data writeToFile:output options:NSDataWritingAtomic error:&error])
+        fail([NSString stringWithFormat:@"Could not create native background bookmark: %@", error]);
+}
+
 static void verify(NSURL *root, NSDictionary *values) {
     NSError *error = nil;
     BOOL stale = NO;
@@ -119,9 +129,11 @@ int main(int argc, const char *argv[]) {
             render(@(argv[2]));
             return 0;
         }
-        if (argc != 4) fail(@"Usage: VolumeAssets render output.png | verify volume metadata.plist");
+        if (argc != 4) fail(@"Usage: VolumeAssets render output.png | bookmark volume output.book | verify volume metadata.plist");
         NSURL *root = [NSURL fileURLWithPath:@(argv[2]) isDirectory:YES];
-        if (strcmp(argv[1], "verify") == 0) {
+        if (strcmp(argv[1], "bookmark") == 0) {
+            bookmark(root, @(argv[3]));
+        } else if (strcmp(argv[1], "verify") == 0) {
             verify(root, [NSDictionary dictionaryWithContentsOfFile:@(argv[3])]);
         } else {
             fail(@"Unknown VolumeAssets action");
