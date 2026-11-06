@@ -28,6 +28,8 @@ jobs:
         run: make test
       - name: Build universal app and packages
         run: ./scripts/package.sh --arch universal --version '${{ steps.version.outputs.value }}'
+      - name: Inspect installer and release archives without installing
+        run: python3 scripts/installer/verify-package.py --arch universal
       - name: Prepare English, Chinese, and Japanese release notes
         run: ./scripts/release-notes.sh '${{ steps.version.outputs.value }}' > build/release-notes.md
       - name: Publish release assets
